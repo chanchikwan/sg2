@@ -22,4 +22,7 @@ R *init(R *, R (*)(R, R));
 R *load(R *, Z);
 Z  dump(Z, R *);
 
+C *scal(C *, R);
+R *scal(R *, R);
+
 #endif

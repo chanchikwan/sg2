@@ -7,7 +7,7 @@ typedef int Z;
 typedef float R;
 typedef struct {R r, i;} C;
 
-extern Z N1, N2, H2, F2;
+extern Z M, N1, N2, H2, F2;
 extern R *w, *Host;
 extern C *W;
 

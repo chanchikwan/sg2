@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include "ihd.h"
 
-Z N1, N2, H2, F2;
+Z M, N1, N2, H2, F2;
 R *w, *Host;
 C *W;
 
@@ -17,7 +17,12 @@ static void done(void)
 
 void setup(Z n1, Z n2)
 {
+  cudaDeviceProp dev;
+
   atexit(done);
+
+  cudaGetDeviceProperties(&dev, 0);
+  M  = dev.maxThreadsPerBlock;
 
   N1 = n1;
   N2 = n2;

@@ -1,6 +1,8 @@
 #ifndef IHD_H
 #define IHD_H
 
+#define TWO_PI (6.2831853071795865f)
+
 typedef int Z;
 typedef float R;
 typedef struct {R r, i;} C;
@@ -16,6 +18,7 @@ R   *inverse(R *, C *);
 
 void setup(Z, Z);
 
+R *init(R *, R (*)(R, R));
 R *load(R *, Z);
 Z  dump(Z, R *);
 

@@ -16,4 +16,7 @@ R   *inverse(R *, C *);
 
 void setup(Z, Z);
 
+R *load(R *, Z);
+Z  dump(Z, R *);
+
 #endif

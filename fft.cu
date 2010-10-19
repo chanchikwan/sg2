@@ -8,7 +8,9 @@ static cufftHandle r2c, c2r;
 void mkplans(Z n1, Z n2)
 {
   if(FAIL(Plan2d, &r2c, n1, n2, CUFFT_R2C) ||
-     FAIL(Plan2d, &c2r, n1, n2, CUFFT_C2R)) {
+     FAIL(Plan2d, &c2r, n1, n2, CUFFT_C2R) ||
+     FAIL(SetCompatibilityMode, r2c, CUFFT_COMPATIBILITY_FFTW_PADDING) ||
+     FAIL(SetCompatibilityMode, c2r, CUFFT_COMPATIBILITY_FFTW_PADDING)) {
     fprintf(stderr, "cufft error: fail to create plan(s).\n");
     exit(-1);
   }

@@ -25,4 +25,6 @@ Z  dump(Z, R *);
 C *scal(C *, R);
 R *scal(R *, R);
 
+C *der(C *, C *, Z);
+
 #endif

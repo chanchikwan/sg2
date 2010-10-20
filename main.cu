@@ -9,14 +9,16 @@ R w0(R x, R y)
 
 int main(int argc, char *argv[])
 {
-  Z n0 = (argc > 1) ? atoi(argv[1]) : 1024;
+  Z ns = 32; /* number of substeps */
+
+  Z n0 = (argc > 1) ? atoi(argv[1]) : 1024 * 32 / ns;
   Z n1 = (argc > 2) ? atoi(argv[2]) : 1024;
   Z n2 = (argc > 3) ? atoi(argv[3]) : 1024;
 
-  R dt = (argc > 4) ? atof(argv[4]) : 1.0e-3;
-  R nu = (argc > 5) ? atof(argv[5]) : 1.0e-3;
+  R dt = (argc > 4) ? atof(argv[4]) : TWO_PI / (n0 * ns);
+  R nu = (argc > 5) ? atof(argv[5]) : 0.0;
 
-  Z i  = 0;
+  Z i  = 0, j;
 
   cudaEvent_t t0, t1;
   cudaEventCreate(&t0);
@@ -33,7 +35,7 @@ int main(int argc, char *argv[])
     printf("%4d: ", i);
 
     cudaEventRecord(t0, 0);
-    /* TODO: step */
+    for(j = 0; j < ns; ++j) step(nu, dt);
     cudaEventRecord(t1, 0);
 
     cudaEventSynchronize(t1);

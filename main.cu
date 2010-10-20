@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
 {
   Z ns = 32; /* number of substeps */
 
-  Z n0 = (argc > 1) ? atoi(argv[1]) : 1024 * 32 / ns;
+  Z n0 = (argc > 1) ? atoi(argv[1]) : 2048 / ns;
   Z n1 = (argc > 2) ? atoi(argv[2]) : 1024;
   Z n2 = (argc > 3) ? atoi(argv[3]) : 1024;
 

@@ -40,8 +40,8 @@ void setup(Z n1, Z n2)
 
   Host = (R *)malloc(sizeof(R) * N1 * N2);
 
-  cudaMalloc(&w, sizeof(R) * N1 * N2);
-  cudaMalloc(&W, sizeof(C) * N1 * H2);
+  cudaMalloc(&w, sizeof(R) * N1 * F2); scale((C *)w, 0.0);
+  cudaMalloc(&W, sizeof(C) * N1 * H2); scale((C *)W, 0.0);
 
   mkplans(n1, n2);
 }

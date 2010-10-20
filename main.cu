@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
   printf("2D spectral hydrodynamic code with CUDA\n");
   setup(n1, n2);
 
-  scal(forward(W, init(w, w0)), 1.0f / (n1 * n2));
+  scale(forward(W, init(w, w0)), 1.0f / (n1 * n2));
   dump(i, inverse(w, W));
 
   while(i++ < n0) {

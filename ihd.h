@@ -7,7 +7,9 @@ typedef int Z;
 typedef float R;
 typedef struct {R r, i;} C;
 
-extern Z M, N1, N2, H2, F2;
+extern Z N1, N2, H2, F2;
+extern uint3 Bsz, Gsz, Hsz;
+
 extern R *w, *Host;
 extern C *W;
 
@@ -17,16 +19,13 @@ C   *forward(C *, R *);
 R   *inverse(R *, C *);
 
 void setup(Z, Z);
-
-R *init(R *, R (*)(R, R));
-R *load(R *, Z);
-Z  dump(Z, R *);
-
+R   *init(R *, R (*)(R, R));
+R   *load(R *, Z);
+Z    dump(Z, R *);
 void step(R, R);
 
-C *scal(C *, R);
-R *scal(R *, R);
-
-C *der(C *, C *, Z);
+C *scale(C *, R);
+R *scale(R *, R);
+C *deriv(C *, C *, Z);
 
 #endif

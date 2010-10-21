@@ -9,16 +9,18 @@ R w0(R x, R y)
 
 int main(int argc, char *argv[])
 {
-  Z ns = 32; /* number of substeps */
+  const char rotor[] = "-/|\\";
 
-  Z n0 = (argc > 1) ? atoi(argv[1]) : 1024 / ns;
+  Z n0 = (argc > 1) ? atoi(argv[1]) : 1024;
   Z n1 = (argc > 2) ? atoi(argv[2]) : 1024;
   Z n2 = (argc > 3) ? atoi(argv[3]) : 1024;
 
-  R dt = (argc > 4) ? atof(argv[4]) : TWO_PI / (n0 * ns);
-  R nu = (argc > 5) ? atof(argv[5]) : 0.0;
+  R tt = (argc > 4) ? atof(argv[4]) : TWO_PI;
+  R dt = (argc > 5) ? atof(argv[5]) : TWO_PI / 1024;
+  R nu = (argc > 6) ? atof(argv[6]) : 1.0e-5;
 
-  Z i  = 0, j;
+  R fo = 5 * n1 * n2 * (19.5 + 12.5 * (log2f(n1) + log2f(n2)));
+  Z i  = 0, j, ns;
 
   cudaEvent_t t0, t1;
   cudaEventCreate(&t0);
@@ -26,21 +28,29 @@ int main(int argc, char *argv[])
 
   printf("2D spectral hydrodynamic code with CUDA\n");
   setup(n1, n2);
+  ns = ceilf(tt / n0 / dt);
+  dt =       tt / n0 / ns;
 
   scale(forward(W, init(w, w0)), 1.0f / (n1 * n2));
   dump(i, inverse(w, W));
 
   while(i++ < n0) {
     float ms;
-    printf("%4d: ", i);
+    printf("%4d: %5.2f -> %5.2f, dt ~ %.0e:       ",
+           i, dt * ns * (i-1), dt * ns * i, dt);
 
     cudaEventRecord(t0, 0);
-    for(j = 0; j < ns; ++j) step(nu, dt);
+    for(j = 0; j < ns; ++j) {
+      printf("\b\b\b\b\b\b%c %4d", rotor[j%4], j+1);
+      fflush(stdout);
+      step(nu, dt);
+    }
     cudaEventRecord(t1, 0);
 
     cudaEventSynchronize(t1);
-    cudaEventElapsedTime(&ms, t0, t1);
-    printf("%.3f ms\n", (double)ms);
+    cudaEventElapsedTime(&ms, t0, t1); ms /= ns;
+    printf("\b\b\b\b\b\b%.3f ms/cycle ~ %.3f GFLOPS\n",
+           ms, 1e-6 * fo / ms);
 
     dump(i, inverse(w, W));
   }

@@ -4,14 +4,14 @@
 
 R w0(R x, R y)
 {
-  return sin(x) * cos(y);
+  return cos(2.0f * x) + cos(y);
 }
 
 int main(int argc, char *argv[])
 {
   Z ns = 32; /* number of substeps */
 
-  Z n0 = (argc > 1) ? atoi(argv[1]) : 2048 / ns;
+  Z n0 = (argc > 1) ? atoi(argv[1]) : 1024 / ns;
   Z n1 = (argc > 2) ? atoi(argv[2]) : 1024;
   Z n2 = (argc > 3) ? atoi(argv[3]) : 1024;
 

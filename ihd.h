@@ -11,7 +11,7 @@ extern Z N1, N2, H2, F2;
 extern uint3 Bsz, Gsz, Hsz;
 
 extern R *w, *Host;
-extern C *W;
+extern C *W, *X, *Y;
 
 void mkplans(Z, Z);
 void rmplans(void);
@@ -30,7 +30,7 @@ C *deriv(C *, C *, Z);
 
 void dx_dd_dy(C *, C *, C *);
 void dy_dd_dx(C *, C *, C *);
-R    *add_pro(R *, R *, R *);
 R    *sub_pro(R *, R *, R *);
+R    *add_pro(R *, R *, R *);
 
 #endif

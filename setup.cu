@@ -7,12 +7,14 @@ Z N1, N2, H2, F2;
 uint3 Bsz, Gsz, Hsz;
 
 R *w, *Host;
-C *W;
+C *W, *X, *Y;
 
 static void done(void)
 {
   rmplans();
 
+  cudaFree(Y);
+  cudaFree(X);
   cudaFree(W);
   cudaFree(w);
 
@@ -42,6 +44,8 @@ void setup(Z n1, Z n2)
 
   cudaMalloc(&w, sizeof(R) * N1 * F2); scale((C *)w, 0.0);
   cudaMalloc(&W, sizeof(C) * N1 * H2); scale((C *)W, 0.0);
+  cudaMalloc(&X, sizeof(C) * N1 * H2); scale((C *)X, 0.0);
+  cudaMalloc(&Y, sizeof(C) * N1 * H2); scale((C *)Y, 0.0);
 
   mkplans(n1, n2);
 }

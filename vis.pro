@@ -1,20 +1,13 @@
 pro vis, i, png=png
 
+  common func, n1, n2, f
+
   if not keyword_set(png) then png = 0
 
-  n1 = 1024 & m1 = 512
-  n2 = 1024 & m2 = 512
+  m1 = 512
+  m2 = 512
 
-  name = string(i, format='(i04)') + '.raw'
-  print, 'loading: ' + name
-
-  f = fltarr(n2, n1)
-  x = findgen(n1) / n1
-  y = findgen(n2) / n2
-
-  openr, lun, name, /get_lun
-  readu, lun, f & f = transpose(f)
-  close, lun & free_lun, lun
+  load, i
 
   print, max(f)
   pos = ( f > 0)^.33

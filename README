@@ -1,0 +1,43 @@
+ihd is a simple 2D spectral hydrodynamic code written in CUDA C
+
+CONVENTIONS: let u be the two dimensional velocity.  We define the
+  stream function f such that
+
+    u = curl(f).
+
+  In component form, we have ux = df/dy, uy = -df/dx.  It is fine that
+  we do not distinguish between the scalar f and the vector (0, 0, f)
+  in this README file.  The vorticity is defined as
+
+    w = curl(u).
+
+  Similarly, we do not distinguish between w or (0, 0, w).  It is
+  clear that the stream function and the vorticity satisfy the
+  following Possion equation:
+
+    w = - grad^2 f,
+
+  or, in the Fourier space,
+
+    W_k = k^2 F_k.  (*)
+
+  We will use nu to denote the kinematic viscosity.  We will also use
+
+    J(f, w; x, y) = (df/dx)(dw/dy) - (dw/dx)(df/dy)
+
+  to denote the Jacobian determinant.
+
+EQUATION: from equation (*), it is clear that W_k falls off slower
+  than F_k.  For a pseudospectral (or collocation) method, it is
+  better to solve the vorticity equation
+
+    dw/dt - J(f, w) = nu grad^2 w,
+
+  instead of the stream function equation because of the finite
+  precision in the fast Fourier transforms.
+
+  For Galerkin spectral method, we keep track of the Fourier modes in
+  stead of the functions.  This allows easy implementation of implicit
+  or semi-implicit integrators for the linear terms.  Although
+  evolving the stream function does not reduce accuracy in Galerkin
+  spectral method, we will stick with the vorticity equation.

@@ -28,4 +28,9 @@ C *scale(C *, R);
 R *scale(R *, R);
 C *deriv(C *, C *, Z);
 
+void dx_dd_dy(C *, C *, C *);
+void dy_dd_dx(C *, C *, C *);
+R    *add_pro(R *, R *, R *);
+R    *sub_pro(R *, R *, R *);
+
 #endif

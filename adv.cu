@@ -11,7 +11,7 @@ static __global__ void _dx_dd_dy(C *x, C *y, const C *w,
   if(i < n1 && j < h2) {
     const R kx    = i < n1 / 2 ? i : i - n1;
     const R ky    = j;
-    const R kx_kk = kx / (kx * kx + ky * ky + 1.0e-16f);
+    const R kx_kk = kx / (kx * kx + ky * ky + K(1.0e-16));
     const C u     = w[h];
 
     x[h].r = - kx_kk * u.i;
@@ -37,7 +37,7 @@ static __global__ void _dy_dd_dx(C *y, C *x, const C *w,
   if(i < n1 && j < h2) {
     const R kx    = i < n1 / 2 ? i : i - n1;
     const R ky    = j;
-    const R ky_kk = ky / (kx * kx + ky * ky + 1.0e-16f);
+    const R ky_kk = ky / (kx * kx + ky * ky + K(1.0e-16));
     const C u     = w[h];
 
     y[h].r = - ky_kk * u.i;

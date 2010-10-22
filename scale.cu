@@ -7,8 +7,8 @@ static __global__ void _zero(C *f, const Z n1, const Z h2)
   const Z h = i * h2 + j;
 
   if(i < n1 && j < h2) {
-    f[h].r = 0.0f;
-    f[h].i = 0.0f;
+    f[h].r = K(0.0);
+    f[h].i = K(0.0);
   }
 }
 

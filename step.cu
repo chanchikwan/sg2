@@ -17,15 +17,15 @@ static __global__ void _evol_diff(C *f, const C *b, const R KK,
 
     if(kk < KK) {
       const R imkk = im * kk;
-      const R temp = 1.0f / (1.0f + imkk);
-      const R impl = temp * (1.0f - imkk);
-      const R expl = temp * ex;
+      const R temp = K(1.0) / (K(1.0) + imkk);
+      const R impl = temp   * (K(1.0) - imkk);
+      const R expl = temp   * ex;
 
       f[h].r = impl * g.r + expl * c.r;
       f[h].i = impl * g.i + expl * c.i;
     } else {
-      f[h].r = 0.0f;
-      f[h].i = 0.0f;
+      f[h].r = K(0.0);
+      f[h].i = K(0.0);
     }
   }
 }
@@ -43,7 +43,7 @@ void step(R nu, R dt)
 
   int i;
   for(i = 0; i < 5; ++i) {
-    const R im = dt * nu * 0.5f * (alpha[i+1] - alpha[i]);
+    const R im = dt * nu * 0.5 * (alpha[i+1] - alpha[i]);
     const R ex = dt * gamma[i] / (N1 * N2);
 
     scale(w, beta[i]);

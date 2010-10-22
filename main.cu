@@ -9,13 +9,13 @@ R noise(R x, R y)
 
 R decay(R x, R y)
 {
-  return 1024 * noise(x, y); /* so u = curl(w) ~ 1 */
+  return 1024.0 * noise(x, y); /* so u = curl(w) ~ 1 */
 }
 
 R KH(R x, R y)
 {
-  return noise(x, y) + (fabsf(x - 0.0f) < 1.0e-6 ? -512.0f : 0.0f)
-                     + (fabsf(x - M_PI) < 1.0e-6 ?  512.0f : 0.0f);
+  return noise(x, y) + (fabs(x - 0.0 ) < 1.0e-6 ? -512.0 : 0.0)
+                     + (fabs(x - M_PI) < 1.0e-6 ?  512.0 : 0.0);
 }
 
 int main(int argc, char *argv[])
@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
   R tt = (argc > 4) ? atof(argv[4]) : 1.0e+2;
   R nu = (argc > 5) ? atof(argv[5]) : 1.0e-4;
 
-  R fo = 5 * n1 * n2 * (19.5 + 12.5 * (log2f(n1) + log2f(n2)));
+  R fo = 5 * n1 * n2 * (19.5 + 12.5 * (log2((double)n1) + log2((double)n2)));
   Z i  = 0;
 
   cudaEvent_t t0, t1;
@@ -39,13 +39,13 @@ int main(int argc, char *argv[])
   printf("2D spectral hydrodynamic code with CUDA\n");
   setup(n1, n2);
 
-  scale(forward(W, init(w, KH)), 1.0f / (n1 * n2));
+  scale(forward(W, init(w, KH)), 1.0 / (n1 * n2));
   dump(i, inverse(w, W));
 
   while(i++ < n0) {
     float ms;
-    Z ns = (Z)ceilf(tt / n0 / 0.9f / getdt(10.0f, nu)), j;
-    R dt =          tt / n0 / ns;
+    Z ns = (Z)ceil(tt / n0 / 0.9 / getdt(10.0, nu)), j;
+    R dt =         tt / n0 / ns;
     printf("%4d: %5.2f -> %5.2f, dt ~ %.0e:       ",
            i, dt * ns * (i-1), dt * ns * i, dt);
 

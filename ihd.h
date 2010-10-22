@@ -1,10 +1,21 @@
 #ifndef IHD_H
 #define IHD_H
 
-#define TWO_PI (6.2831853071795865f)
+#if defined(DOUBLE) || defined(OUBLE) /* So -DOUBLE works */
+#define K(X) (X)
+#else
+#define K(X) (X##f)
+#endif
+
+#define ONE_PI K(3.1415926535897932)
+#define TWO_PI K(6.2831853071795865)
 
 typedef int Z;
+#if defined(DOUBLE) || defined(OUBLE) /* So -DOUBLE works */
+typedef double R;
+#else
 typedef float R;
+#endif
 typedef struct {R r, i;} C;
 
 extern Z N1, N2, H2, F2;

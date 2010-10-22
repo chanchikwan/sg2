@@ -19,6 +19,7 @@ C   *forward(C *, R *);
 R   *inverse(R *, C *);
 
 void setup(Z, Z);
+R    getdt(R, R);
 R   *init(R *, R (*)(R, R));
 R   *load(R *, Z);
 Z    dump(Z, R *);

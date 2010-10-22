@@ -15,12 +15,11 @@ int main(int argc, char *argv[])
   Z n1 = (argc > 2) ? atoi(argv[2]) : 1024;
   Z n2 = (argc > 3) ? atoi(argv[3]) : 1024;
 
-  R tt = (argc > 4) ? atof(argv[4]) : TWO_PI;
-  R dt = (argc > 5) ? atof(argv[5]) : TWO_PI / 1024;
-  R nu = (argc > 6) ? atof(argv[6]) : 1.0e-5;
+  R tt = (argc > 4) ? atof(argv[4]) : 1.0e+2;
+  R nu = (argc > 5) ? atof(argv[5]) : 1.0e-5;
 
   R fo = 5 * n1 * n2 * (19.5 + 12.5 * (log2f(n1) + log2f(n2)));
-  Z i  = 0, j, ns;
+  Z i  = 0;
 
   cudaEvent_t t0, t1;
   cudaEventCreate(&t0);
@@ -28,14 +27,14 @@ int main(int argc, char *argv[])
 
   printf("2D spectral hydrodynamic code with CUDA\n");
   setup(n1, n2);
-  ns = ceilf(tt / n0 / dt);
-  dt =       tt / n0 / ns;
 
   scale(forward(W, init(w, w0)), 1.0f / (n1 * n2));
   dump(i, inverse(w, W));
 
   while(i++ < n0) {
     float ms;
+    Z ns = (Z)ceilf(tt / n0 / 0.9f / getdt(1.118f, nu)), j;
+    R dt =          tt / n0 / ns;
     printf("%4d: %5.2f -> %5.2f, dt ~ %.0e:       ",
            i, dt * ns * (i-1), dt * ns * i, dt);
 

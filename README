@@ -41,3 +41,17 @@ EQUATION: from equation (*), it is clear that W_k falls off slower
   or semi-implicit integrators for the linear terms.  Although
   evolving the stream function does not reduce accuracy in Galerkin
   spectral method, we will stick with the vorticity equation.
+
+TIME-STEP: The stability condition for the explicit (advection) step
+  is u dt < 3.34 / K.  Using K = n / 3, we have
+
+    dt u n < 10.02
+
+  The stability condition for the implicit (diffusive) step is
+  1 - 0.5 dt (alpha[i+1] - alpha[i]) nu K^2 >= 0.  Because
+  max(alpha[i+1] - alpha[i]) ~ 0.336 for 4th-order Runge-Kutta/Crank-
+  Nicolson, we have
+
+    dt nu n^2 < (18 / 0.336) ~ 53.567
+
+  The overall stable time step is the smaller one.

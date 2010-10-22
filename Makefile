@@ -4,7 +4,7 @@ LINK = $(addprefix -Xlinker , -lcufft -rpath $(CUDA)/lib)
 FLGS = $(addprefix --compiler-options , -Wall)
 
 double:
-	$(NVCC) *.cu -O3 $(LINK) $(FLGS) -o ihd -DOUBLE
+	$(NVCC) *.cu -O3 $(LINK) $(FLGS) -o ihd -DOUBLE -arch sm_13
 
 float:
 	$(NVCC) *.cu -O3 $(LINK) $(FLGS) -o ihd

@@ -1,7 +1,19 @@
 #include <cufft.h>
 #include "ihd.h"
 
-#define FAIL(X, ...) (CUFFT_SUCCESS != cufft##X(__VA_ARGS__))
+#define CONCATENATION(prefix, name) prefix ## name
+#define CONCATE_MACRO(prefix, name) CONCATENATION(prefix, name)
+
+#define FAIL(X, ...) (CUFFT_SUCCESS != CONCATE_MACRO(cufft, X)(__VA_ARGS__))
+
+#if defined(DOUBLE) || defined(OUBLE) /* So -DOUBLE works */
+#  define CUFFT_R2C    CUFFT_D2Z
+#  define CUFFT_C2R    CUFFT_Z2D
+#  define ExecR2C      ExecD2Z
+#  define ExecC2R      ExecZ2D
+#  define cufftReal    cufftDoubleReal
+#  define cufftComplex cufftDoubleComplex
+#endif
 
 static cufftHandle r2c, c2r;
 

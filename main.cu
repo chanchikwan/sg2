@@ -2,9 +2,20 @@
 #include <math.h>
 #include "ihd.h"
 
-R w0(R x, R y)
+R noise(R x, R y)
 {
-  return 1024 * (0.5 - (R)rand() / RAND_MAX); /* so u = curl(w) ~ 1 */
+  return 0.5 - (R)rand() / RAND_MAX;
+}
+
+R decay(R x, R y)
+{
+  return 1024 * noise(x, y); /* so u = curl(w) ~ 1 */
+}
+
+R KH(R x, R y)
+{
+  return noise(x, y) + (fabsf(x - 0.0f) < 1.0e-6 ? -512.0f : 0.0f)
+                     + (fabsf(x - M_PI) < 1.0e-6 ?  512.0f : 0.0f);
 }
 
 int main(int argc, char *argv[])
@@ -28,7 +39,7 @@ int main(int argc, char *argv[])
   printf("2D spectral hydrodynamic code with CUDA\n");
   setup(n1, n2);
 
-  scale(forward(W, init(w, w0)), 1.0f / (n1 * n2));
+  scale(forward(W, init(w, KH)), 1.0f / (n1 * n2));
   dump(i, inverse(w, W));
 
   while(i++ < n0) {

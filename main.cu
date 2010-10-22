@@ -4,7 +4,7 @@
 
 R w0(R x, R y)
 {
-  return cos(2.0f * x) + cos(y);
+  return 1024 * (0.5 - (R)rand() / RAND_MAX); /* so u = curl(w) ~ 1 */
 }
 
 int main(int argc, char *argv[])
@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
   Z n2 = (argc > 3) ? atoi(argv[3]) : 1024;
 
   R tt = (argc > 4) ? atof(argv[4]) : 1.0e+2;
-  R nu = (argc > 5) ? atof(argv[5]) : 1.0e-5;
+  R nu = (argc > 5) ? atof(argv[5]) : 1.0e-4;
 
   R fo = 5 * n1 * n2 * (19.5 + 12.5 * (log2f(n1) + log2f(n2)));
   Z i  = 0;
@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 
   while(i++ < n0) {
     float ms;
-    Z ns = (Z)ceilf(tt / n0 / 0.9f / getdt(1.118f, nu)), j;
+    Z ns = (Z)ceilf(tt / n0 / 0.9f / getdt(10.0f, nu)), j;
     R dt =          tt / n0 / ns;
     printf("%4d: %5.2f -> %5.2f, dt ~ %.0e:       ",
            i, dt * ns * (i-1), dt * ns * i, dt);

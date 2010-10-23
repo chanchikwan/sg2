@@ -9,15 +9,17 @@ static __global__ void _dx_dd_dy(C *x, C *y, const C *w,
   const Z h = i * h2 + j;
 
   if(i < n1 && j < h2) {
-    const R kx    = i < n1 / 2 ? i : i - n1;
-    const R ky    = j;
-    const R kx_kk = kx / (kx * kx + ky * ky + K(1.0e-16));
-    const C u     = w[h];
+    const C u  = w[h];
+    const R kx = i < n1 / 2 ? i : i - n1;
+    const R ky = j;
 
-    x[h].r = - kx_kk * u.i;
-    x[h].i =   kx_kk * u.r;
-    y[h].r = - ky    * u.i;
-    y[h].i =   ky    * u.r;
+    R lx = kx;
+    if(h) lx *= K(1.0) / (kx * kx + ky * ky);
+
+    x[h].r = - lx * u.i;
+    x[h].i =   lx * u.r;
+    y[h].r = - ky * u.i;
+    y[h].i =   ky * u.r;
   }
 }
 
@@ -35,15 +37,17 @@ static __global__ void _dy_dd_dx(C *y, C *x, const C *w,
   const Z h = i * h2 + j;
 
   if(i < n1 && j < h2) {
-    const R kx    = i < n1 / 2 ? i : i - n1;
-    const R ky    = j;
-    const R ky_kk = ky / (kx * kx + ky * ky + K(1.0e-16));
-    const C u     = w[h];
+    const C u  = w[h];
+    const R kx = i < n1 / 2 ? i : i - n1;
+    const R ky = j;
 
-    y[h].r = - ky_kk * u.i;
-    y[h].i =   ky_kk * u.r;
-    x[h].r = - kx    * u.i;
-    x[h].i =   kx    * u.r;
+    R ly = ky;
+    if(h) ly *= K(1.0) / (kx * kx + ky * ky);
+
+    y[h].r = - ly * u.i;
+    y[h].i =   ly * u.r;
+    x[h].r = - kx * u.i;
+    x[h].i =   kx * u.r;
   }
 }
 

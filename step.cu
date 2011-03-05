@@ -1,6 +1,7 @@
 #include "ihd.h"
 
 static __global__ void _evol_diff(C *f, const C *b, const R KK,
+                                        const R nu, const R mu,
                                         const R im, const R ex,
                                         const Z n1, const Z h2)
 {
@@ -16,7 +17,7 @@ static __global__ void _evol_diff(C *f, const C *b, const R KK,
     const R kk = kx * kx + ky * ky;
 
     if(kk < KK) {
-      const R imkk = im * kk;
+      const R imkk = im     * (nu * kk + mu);
       const R temp = K(1.0) / (K(1.0) + imkk);
       const R impl = temp   * (K(1.0) - imkk);
       const R expl = temp   * ex;
@@ -30,7 +31,7 @@ static __global__ void _evol_diff(C *f, const C *b, const R KK,
   }
 }
 
-void step(R nu, R dt)
+void step(R nu, R mu, R dt)
 {
   const R K = (N1 < N2 ? N1 : N2) / 3.0;
 
@@ -43,7 +44,7 @@ void step(R nu, R dt)
 
   int i;
   for(i = 0; i < 5; ++i) {
-    const R im = dt * nu * 0.5 * (alpha[i+1] - alpha[i]);
+    const R im = dt * 0.5 * (alpha[i+1] - alpha[i]);
     const R ex = dt * gamma[i] / (N1 * N2);
 
     scale(w, beta[i]);
@@ -53,6 +54,6 @@ void step(R nu, R dt)
 
     forward(X, w); /* X here is just a buffer */
 
-    _evol_diff<<<Hsz, Bsz>>>(W, (const C *)X, K * K, im, ex, N1, H2);
+    _evol_diff<<<Hsz, Bsz>>>(W, (const C *)X, K * K, nu, mu, im, ex, N1, H2);
   }
 }

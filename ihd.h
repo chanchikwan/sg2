@@ -30,11 +30,11 @@ C   *forward(C *, R *);
 R   *inverse(R *, C *);
 
 void setup(Z, Z);
-R    getdt(R, R);
+R    getdt(R, R, R);
 R   *init(R *, R (*)(R, R));
 R   *load(R *, Z);
 Z    dump(Z, R *);
-void step(R, R);
+void step(R, R, R);
 
 C *scale(C *, R);
 R *scale(R *, R);

@@ -22,14 +22,15 @@ int main(int argc, char *argv[])
 {
   const char rotor[] = "-/|\\";
 
-  Z n0 = (argc > 1) ? atoi(argv[1]) : 1024;
-  Z n1 = (argc > 2) ? atoi(argv[2]) : 1024;
-  Z n2 = (argc > 3) ? atoi(argv[3]) : 1024;
+  R nu = (argc > 1) ? atof(argv[1]) : 1.0e-4;
+  R mu = (argc > 2) ? atof(argv[2]) : 1.0e-2;
+  R tt = (argc > 3) ? atof(argv[3]) : 1.0e+2;
 
-  R tt = (argc > 4) ? atof(argv[4]) : 1.0e+2;
-  R nu = (argc > 5) ? atof(argv[5]) : 1.0e-4;
+  Z n0 = (argc > 4) ? atoi(argv[4]) : 1024;
+  Z n1 = (argc > 5) ? atoi(argv[5]) : 1024;
+  Z n2 = (argc > 6) ? atoi(argv[6]) : 1024;
 
-  R fo = 5 * n1 * n2 * (19.5 + 12.5 * (log2((double)n1) + log2((double)n2)));
+  R fo = 5 * n1 * n2 * (21.5 + 12.5 * (log2((double)n1) + log2((double)n2)));
   Z i  = 0;
 
   cudaEvent_t t0, t1;
@@ -44,7 +45,7 @@ int main(int argc, char *argv[])
 
   while(i++ < n0) {
     float ms;
-    Z ns = (Z)ceil(tt / n0 / 0.9 / getdt(10.0, nu)), j;
+    Z ns = (Z)ceil(tt / n0 / 0.9 / getdt(10.0, nu, mu)), j;
     R dt =         tt / n0 / ns;
     printf("%4d: %5.2f -> %5.2f, dt ~ %.0e:       ",
            i, dt * ns * (i-1), dt * ns * i, dt);
@@ -53,7 +54,7 @@ int main(int argc, char *argv[])
     for(j = 0; j < ns; ++j) {
       printf("\b\b\b\b\b\b%c %4d", rotor[j%4], j+1);
       fflush(stdout);
-      step(nu, dt);
+      step(nu, mu, dt);
     }
     cudaEventRecord(t1, 0);
 

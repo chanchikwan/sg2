@@ -45,13 +45,13 @@ EQUATION: from equation (*), it is clear that W_k falls off slower
 TIME-STEP: The stability condition for the explicit (advection) step
   is u dt < 3.34 / K.  Using K = n / 3, we have
 
-    dt u n < 10.02
+    dt u n < 10.0
 
   The stability condition for the implicit (diffusive) step is
-  1 - 0.5 dt (alpha[i+1] - alpha[i]) nu K^2 >= 0.  Because
+  1 - 0.5 dt (alpha[i+1] - alpha[i]) (nu K^2 + mu) >= 0.  Because
   max(alpha[i+1] - alpha[i]) ~ 0.336 for 4th-order Runge-Kutta/Crank-
   Nicolson, we have
 
-    dt nu n^2 < (18 / 0.336) ~ 53.567
+    dt (nu n^2 / 9 + mu) < (2 / 0.336) ~ 5.95
 
   The overall stable time step is the smaller one.

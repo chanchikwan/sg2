@@ -10,8 +10,8 @@ pro vis, i, png=png
   load, i
 
   print, max(f)
-  pos = 4 * ( f / sqrt(n1 * n2) > 0)^.33
-  neg = 4 * (-f / sqrt(n1 * n2) > 0)^.33
+  pos = 16 * ( f / sqrt(n1 * n2) > 0)^.33
+  neg = 16 * (-f / sqrt(n1 * n2) > 0)^.33
 
   img = fltarr(3,n1,n2)
   img[0,*,*] =       pos   + .1  * neg^3

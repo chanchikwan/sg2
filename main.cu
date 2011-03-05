@@ -22,15 +22,18 @@ int main(int argc, char *argv[])
 {
   const char rotor[] = "-/|\\";
 
-  R nu = (argc > 1) ? atof(argv[1]) : 1.0e-4;
+  R nu = (argc > 1) ? atof(argv[1]) : 1.0e-5;
   R mu = (argc > 2) ? atof(argv[2]) : 1.0e-2;
-  R tt = (argc > 3) ? atof(argv[3]) : 1.0e+2;
+  R fi = (argc > 3) ? atof(argv[3]) : 5.0e-3;
+  R ki = (argc > 4) ? atof(argv[4]) : 1.0e+1;
+  R tt = (argc > 5) ? atof(argv[5]) : 1024.0;
 
-  Z n0 = (argc > 4) ? atoi(argv[4]) : 1024;
-  Z n1 = (argc > 5) ? atoi(argv[5]) : 1024;
-  Z n2 = (argc > 6) ? atoi(argv[6]) : 1024;
+  Z n0 = (argc > 6) ? atoi(argv[6]) : 1024;
+  Z n1 = (argc > 7) ? atoi(argv[7]) : 1024;
+  Z n2 = (argc > 8) ? atoi(argv[8]) : 1024;
 
-  R fo = 5 * n1 * n2 * (21.5 + 12.5 * (log2((double)n1) + log2((double)n2)));
+  R fo = 5 * n1 * n2 * (21.5 + ((fi != 0.0 && ki != 0.0) ? 6 : 0) +
+                        12.5 * (log2((double)n1) + log2((double)n2)));
   Z i  = 0;
 
   cudaEvent_t t0, t1;
@@ -40,12 +43,12 @@ int main(int argc, char *argv[])
   printf("2D spectral hydrodynamic code with CUDA\n");
   setup(n1, n2);
 
-  scale(forward(W, init(w, KH)), 1.0 / (n1 * n2));
+  scale(forward(W, init(w, noise)), 1.0 / (n1 * n2));
   dump(i, inverse(w, W));
 
   while(i++ < n0) {
     float ms;
-    Z ns = (Z)ceil(tt / n0 / 0.9 / getdt(10.0, nu, mu)), j;
+    Z ns = (Z)ceil(tt / n0 / 0.9 / getdt(0.2, nu, mu)), j;
     R dt =         tt / n0 / ns;
     printf("%4d: %5.2f -> %5.2f, dt ~ %.0e:       ",
            i, dt * ns * (i-1), dt * ns * i, dt);
@@ -54,7 +57,7 @@ int main(int argc, char *argv[])
     for(j = 0; j < ns; ++j) {
       printf("\b\b\b\b\b\b%c %4d", rotor[j%4], j+1);
       fflush(stdout);
-      step(nu, mu, dt);
+      step(nu, mu, fi, ki, dt);
     }
     cudaEventRecord(t1, 0);
 

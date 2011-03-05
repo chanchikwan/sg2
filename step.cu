@@ -31,7 +31,7 @@ static __global__ void _evol_diff(C *f, const C *b, const R KK,
   }
 }
 
-void step(R nu, R mu, R dt)
+void step(R nu, R mu, R fi, R ki, R dt)
 {
   const R K = (N1 < N2 ? N1 : N2) / 3.0;
 
@@ -48,6 +48,8 @@ void step(R nu, R mu, R dt)
     const R ex = dt * gamma[i] / (N1 * N2);
 
     scale(w, beta[i]);
+
+    force(w, fi, ki); /* Kolmogorov forcing */
 
     dx_dd_dy(X, Y, W); add_pro(w, inverse((R *)X, X), inverse((R *)Y, Y));
     dy_dd_dx(Y, X, W); sub_pro(w, inverse((R *)Y, Y), inverse((R *)X, X));

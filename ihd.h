@@ -34,8 +34,9 @@ R    getdt(R, R, R);
 R   *init(R *, R (*)(R, R));
 R   *load(R *, Z);
 Z    dump(Z, R *);
-void step(R, R, R);
+void step(R, R, R, R, R);
 
+R *force(R *, R, R);
 C *scale(C *, R);
 R *scale(R *, R);
 C *deriv(C *, C *, Z);

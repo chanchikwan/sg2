@@ -36,7 +36,7 @@ R   *load(R *, Z);
 Z    dump(Z, R *);
 void step(R, R, R, R, R);
 
-R *force(R *, R, R);
+R *force(R *, R, R, R);
 C *scale(C *, R);
 R *scale(R *, R);
 C *deriv(C *, C *, Z);

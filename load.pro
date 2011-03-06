@@ -1,9 +1,10 @@
-pro load, i, surf=surf
+pro load, i, surf=surf, view=view
 
   common func, n1, n2, f
   common spec, k1, k2, s
 
   if not keyword_set(surf) then surf = 0
+  if not keyword_set(view) then view = 0
 
   name = string(i, format='(i04)') + '.raw'
   print, 'loading: ' + name
@@ -33,5 +34,6 @@ pro load, i, surf=surf
   ; obtain fft
   s = fft(f)
   if surf then shade_surf, 2 * alog10(abs(s)) > (-16)
+  if view then tvscl, 2 * alog10(abs(s)) > (-16)
 
 end

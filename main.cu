@@ -24,8 +24,8 @@ int main(int argc, char *argv[])
 
   R nu = (argc > 1) ? atof(argv[1]) : 1.0e-5;
   R mu = (argc > 2) ? atof(argv[2]) : 1.0e-2;
-  R fi = (argc > 3) ? atof(argv[3]) : 5.0e-3;
-  R ki = (argc > 4) ? atof(argv[4]) : 1.0e+1;
+  R fi = (argc > 3) ? atof(argv[3]) : 5.0e-2;
+  R ki = (argc > 4) ? atof(argv[4]) : 1.0e+2;
   R tt = (argc > 5) ? atof(argv[5]) : 1024.0;
 
   Z n0 = (argc > 6) ? atoi(argv[6]) : 1024;
@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 
   while(i++ < n0) {
     float ms;
-    Z ns = (Z)ceil(tt / n0 / 0.9 / getdt(0.1, nu, mu)), j;
+    Z ns = (Z)ceil(tt / n0 / 0.9 / getdt(1.0, nu, mu)), j;
     R dt =         tt / n0 / ns;
     printf("%4d: %5.2f -> %5.2f, dt ~ %.0e:       ",
            i, dt * ns * (i-1), dt * ns * i, dt);

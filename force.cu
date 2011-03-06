@@ -15,8 +15,8 @@ static __global__ void _force(R *f, const R sl, const R fi, const R ki,
   const Z h = i * n2 + j;
 
   if(i < n1 && j < n2) {
-    const R x = (TWO_PI / n1) * i;
-    f[h] = sl * f[h] - fi * ki * cos(ki * x);
+    const R dx = K(1.0) / n1;
+    f[h] = sl * f[h] - fi * ki * cos(TWO_PI * ki * i * dx);
   }
 }
 

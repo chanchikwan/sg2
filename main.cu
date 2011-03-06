@@ -6,7 +6,7 @@
 
 R noise(R x, R y)
 {
-  return 0.5 - (R)rand() / RAND_MAX;
+  return 0.5 - (R)(Seed = rand()) / (RAND_MAX + 1.0);
 }
 
 R decay(R x, R y)
@@ -65,8 +65,8 @@ int main(int argc, char *argv[])
   fo = 5 * n1 * n2 * (21.5 + (fi * ki > 0.0 ? 0 : 8) +
                       12.5 * (log2((double)n1) + log2((double)n2)));
 
-  if(input && exist(input)) {
-    scale(forward(W, load(w, input)), 1.0 / (n1 * n2));
+  if(input && exist(input) && load(w, input)) {
+    scale(forward(W, w), 1.0 / (n1 * n2));
     printf("LOADED\n");
   } else {
     if(input) printf("FAILED TO LOAD, ");

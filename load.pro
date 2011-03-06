@@ -12,7 +12,7 @@ pro load, i, surf=surf, view=view
   openr, lun, name, /get_lun
 
     ; load array information
-    n = lonarr(3)
+    n = lonarr(4)
     readu, lun, n
     n1 = n[1]
     n2 = n[2]

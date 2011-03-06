@@ -3,7 +3,7 @@
 
 #define TIDE 32
 
-Z N1, N2, H2, F2;
+Z N1, N2, H2, F2, Seed = 1;
 uint3 Bsz, Gsz, Hsz;
 
 R *w, *Host;

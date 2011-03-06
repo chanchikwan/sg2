@@ -18,7 +18,7 @@ typedef float R;
 #endif
 typedef struct {R r, i;} C;
 
-extern Z N1, N2, H2, F2;
+extern Z N1, N2, H2, F2, Seed;
 extern uint3 Bsz, Gsz, Hsz;
 
 extern R *w, *Host;

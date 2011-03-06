@@ -21,6 +21,7 @@ R KH(R x, R y)
 int main(int argc, char *argv[])
 {
   const char rotor[] = "-/|\\";
+  const char input[] = "input.raw";
 
   R nu = (argc > 1) ? atof(argv[1]) : 1.0e-5;
   R mu = (argc > 2) ? atof(argv[2]) : 1.0e-2;
@@ -43,8 +44,12 @@ int main(int argc, char *argv[])
   printf("2D spectral hydrodynamic code with CUDA\n");
   setup(n1, n2);
 
-  scale(forward(W, init(w, noise)), 1.0 / (n1 * n2));
-  dump(i, inverse(w, W));
+  if(exist(input))
+    scale(forward(W, load(w, input)), 1.0 / (n1 * n2));
+  else {
+    scale(forward(W, init(w, noise)), 1.0 / (n1 * n2));
+    dump(i, inverse(w, W));
+  }
 
   while(i++ < n0) {
     float ms;

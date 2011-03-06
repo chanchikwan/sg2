@@ -1,13 +1,11 @@
 #include <stdio.h>
 #include "ihd.h"
 
-R *load(R *f, Z i)
+R *load(R *f, const char *name)
 {
-  char  name[256];
   FILE *file;
   Z     size[3];
 
-  sprintf(name, "%04d.raw", i);
   file = fopen(name, "rb");
   fread(size, sizeof(Z), 3,       file); /* TODO: check data type and size */
   fread(Host, sizeof(R), N1 * N2, file);

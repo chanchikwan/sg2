@@ -16,19 +16,17 @@ R *load(R *f, const char *name)
   return f;
 }
 
-Z dump(Z i, R *f)
+R *dump(const char *name, R *f)
 {
-  char  name[256];
   FILE *file;
   Z     size[3] = {sizeof(R), N1, N2};
 
   cudaMemcpy(Host, f, sizeof(R) * N1 * N2, cudaMemcpyDeviceToHost);
 
-  sprintf(name, "%04d.raw", i);
   file = fopen(name, "wb");
   fwrite(size, sizeof(Z), 3,       file);
   fwrite(Host, sizeof(R), N1 * N2, file);
   fclose(file);
 
-  return i;
+  return f;
 }

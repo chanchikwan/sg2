@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
     scale(forward(W, load(w, input)), 1.0 / (n1 * n2));
   else {
     scale(forward(W, init(w, noise)), 1.0 / (n1 * n2));
-    dump(i, inverse(w, W));
+    dump(name(i), inverse(w, W));
   }
 
   while(i++ < n0) {
@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
     printf("\b\b\b\b\b\b%.3f ms/cycle ~ %.3f GFLOPS\n",
            ms, 1e-6 * fo / ms);
 
-    dump(i, inverse(w, W));
+    dump(name(i), inverse(w, W));
   }
 
   cudaEventDestroy(t1);

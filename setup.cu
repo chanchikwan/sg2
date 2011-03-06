@@ -9,6 +9,8 @@ uint3 Bsz, Gsz, Hsz;
 R *w, *Host;
 C *W, *X, *Y;
 
+char Prefix[8] = "";
+
 static void done(void)
 {
   rmplans();

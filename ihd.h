@@ -24,18 +24,22 @@ extern uint3 Bsz, Gsz, Hsz;
 extern R *w, *Host;
 extern C *W, *X, *Y;
 
+extern char Prefix[];
+
 void mkplans(Z, Z);
 void rmplans(void);
 C   *forward(C *, R *);
 R   *inverse(R *, C *);
 
+const char *name(Z);
 int  exist(const char *);
+
 void setup(Z, Z);
 R    getdt(R, R, R);
+void step(R, R, R, R, R);
 R   *init(R *, R (*)(R, R));
 R   *load(R *, const char *);
-Z    dump(Z, R *);
-void step(R, R, R, R, R);
+R   *dump(const char *, R *);
 
 R *force(R *, R, R, R);
 C *force(C *, R, R, R);

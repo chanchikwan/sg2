@@ -47,10 +47,10 @@ void step(R nu, R mu, R fi, R ki, R dt)
     const R im = dt * 0.5 * (alpha[i+1] - alpha[i]);
     const R ex = dt * gamma[i] / (N1 * N2);
 
-    if(fi != 0.0 && ki != 0.0)
-      force(w, beta[i], fi, ki); /* scaling and Kolmogorov forcing */
-    else
+    if(fi * ki > 0.0)
       scale(w, beta[i]);
+    else
+      force(w, beta[i], fi, ki); /* scaling and Kolmogorov forcing */
 
     dx_dd_dy(X, Y, W); add_pro(w, inverse((R *)X, X), inverse((R *)Y, Y));
     dy_dd_dx(Y, X, W); sub_pro(w, inverse((R *)Y, Y), inverse((R *)X, X));
@@ -59,4 +59,7 @@ void step(R nu, R mu, R fi, R ki, R dt)
 
     _evol_diff<<<Hsz, Bsz>>>(W, (const C *)X, K * K, nu, mu, im, ex, N1, H2);
   }
+
+  if(fi * ki > 0)
+    force(W, dt, fi, ki); /* 1st-order Euler update for random forcing */
 }

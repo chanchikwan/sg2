@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
   Z n1 = (argc > 7) ? atoi(argv[7]) : 1024;
   Z n2 = (argc > 8) ? atoi(argv[8]) : 1024;
 
-  R fo = 5 * n1 * n2 * (21.5 + ((fi != 0.0 && ki != 0.0) ? 6 : 0) +
+  R fo = 5 * n1 * n2 * (21.5 + (fi * ki > 0.0 ? 0 : 8) +
                         12.5 * (log2((double)n1) + log2((double)n2)));
   Z i  = 0;
 
@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 
   while(i++ < n0) {
     float ms;
-    Z ns = (Z)ceil(tt / n0 / 0.9 / getdt(0.2, nu, mu)), j;
+    Z ns = (Z)ceil(tt / n0 / 0.9 / getdt(0.1, nu, mu)), j;
     R dt =         tt / n0 / ns;
     printf("%4d: %5.2f -> %5.2f, dt ~ %.0e:       ",
            i, dt * ns * (i-1), dt * ns * i, dt);

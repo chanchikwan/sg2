@@ -55,3 +55,23 @@ TIME-STEP: The stability condition for the explicit (advection) step
     dt (nu n^2 / 9 + mu) < (2 / 0.336) ~ 5.95
 
   The overall stable time step is the smaller one.
+
+FORCING: we implemented two kinds of forcings.  One is determinated
+  Kolmogorov forcing, and the other one is random forcing at a given
+  wavenumber.  Both forcing terms are implemented in force.cu.
+
+  For the Kolmogorov forcing, we use the following equation:
+
+    f_K(x, y) = fi ki cos(ki x)
+
+  where fi and ki are paramters describing the amplitue and wavenumber
+  of the forcing.  This forcing is integrated explicitly in the
+  low-storage 4th-order Runge-Kutta method.
+
+  For random forcing, we use
+
+    f_r(x, y) = fi ki exp[i (kix x + kiy y)] / sqrt(dt)
+
+  and update the vorticity at the end of each Runge-Kutta (full) step.
+  The update is only 1st order in time.  The randomness comes in
+  because of a phase and the direction of ki.

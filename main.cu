@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
 #include "ihd.h"
@@ -35,6 +36,7 @@ int main(int argc, char *argv[])
   cudaEventCreate(&t0);
   cudaEventCreate(&t1);
 
+  for(i = 1; i < argc; ++i) if(!strcmp(argv[i], "--help")) usage(0);
   printf("2D spectral hydrodynamic code with CUDA\n\n");
 
   for(i = 1; i < argc; ++i) {
@@ -52,7 +54,7 @@ int main(int argc, char *argv[])
                 if(HAS_ARG)   n1 = atoi(argv[++i]);
                 if(HAS_ARG)   n2 = atoi(argv[++i]); break; }
       case 'o': if(HAS_ARG) { setprefix(argv[++i]); break; }
-      default : printf("  Ignore \"%s\"\n", argv[i]);
+      default : printf("Ignore \"%s\"\n", argv[i]);
     }
   }
 
@@ -77,7 +79,7 @@ int main(int argc, char *argv[])
     dump(name(i = 0), inverse(w, W));
   }
 
-  printf("\nStart simulation...\n");
+  printf("======================= Start simulation =======================\n");
 
   for(++i; i <= n0; ++i) {
     float ms;

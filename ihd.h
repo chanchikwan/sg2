@@ -31,6 +31,7 @@ void rmplans(void);
 C   *forward(C *, R *);
 R   *inverse(R *, C *);
 
+void usage(int);
 void setprefix(const char *);
 int exist(const char *);
 int frame(const char *);

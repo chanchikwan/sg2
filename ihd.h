@@ -31,8 +31,9 @@ void rmplans(void);
 C   *forward(C *, R *);
 R   *inverse(R *, C *);
 
+int exist(const char *);
+int frame(const char *);
 const char *name(Z);
-int  exist(const char *);
 
 void setup(Z, Z);
 R    getdt(R, R, R);

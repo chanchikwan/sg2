@@ -1,13 +1,6 @@
 #include <stdio.h>
 #include "ihd.h"
 
-const char *name(Z i)
-{
-  static char n[256];
-  sprintf(n, "%s%04d.raw", Prefix, i);
-  return n;
-}
-
 int exist(const char *name)
 {
   FILE *file = fopen(name, "r");
@@ -20,4 +13,20 @@ int exist(const char *name)
       return 1;
   }
   return 0;
+}
+
+int frame(const char *h)
+{
+  char c;
+  while(c = *h++)
+    if('0' <= c && c <= '9')
+      return atoi(h-1); /* get the frame number */
+  return 0;
+}
+
+const char *name(Z i)
+{
+  static char n[256];
+  sprintf(n, "%s%04d.raw", Prefix, i);
+  return n;
 }

@@ -68,16 +68,17 @@ int main(int argc, char *argv[])
   if(input && exist(input) && load(w, input)) {
     scale(forward(W, w), 1.0 / (n1 * n2));
     printf("LOADED\n");
+    i = frame(input);
   } else {
     if(input) printf("FAILED TO LOAD, ");
     scale(forward(W, init(w, noise)), 1.0 / (n1 * n2));
     printf("initialized with noise\n");
-    dump(name(0), inverse(w, W));
+    dump(name(i = 0), inverse(w, W));
   }
 
   printf("\nStart simulation...\n");
 
-  for(i = 1; i <= n0; ++i) {
+  for(++i; i <= n0; ++i) {
     float ms;
     Z ns = (Z)ceil(tt / n0 / 0.9 / getdt(1.0, nu, mu)), j;
     R dt =         tt / n0 / ns;

@@ -1,12 +1,17 @@
-pro load, i, surf=surf, view=view
+pro load, p, i, surf=surf, view=view
 
   common func, n1, n2, f
   common spec, k1, k2, s
 
+  if n_elements(i) eq 0 then begin
+    i = p
+    p = ''
+  endif
+
   if not keyword_set(surf) then surf = 0
   if not keyword_set(view) then view = 0
 
-  name = string(i, format='(i04)') + '.raw'
+  name = p + string(i, format='(i04)') + '.raw'
   print, 'loading: ' + name
 
   openr, lun, name, /get_lun

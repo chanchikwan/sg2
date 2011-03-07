@@ -1,4 +1,4 @@
-pro vis, i, png=png
+pro vis, p, i, png=png
 
   common func, n1, n2, f
 
@@ -7,7 +7,7 @@ pro vis, i, png=png
   m1 = 512
   m2 = 512
 
-  load, i
+  load, p, i
 
   print, max(f)
   pos = 8 * ( f / sqrt(n1 * n2) > 0)^.33
@@ -22,7 +22,7 @@ pro vis, i, png=png
   img[where(img gt 255)] = 255
 
   if(png) then $
-    write_png, 'v' + string(i, format='(i04)') + '.png', img $
+    write_png, p + string(i, format='(i04)') + '.png', img $
   else begin
     window, 0, xSize=m1, ySize=m2
     tv, img, /true

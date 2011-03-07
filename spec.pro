@@ -1,4 +1,4 @@
-pro spec, i, png=png, eps=eps
+pro spec, p, i, png=png, eps=eps
 
   common func, n1, n2, f
   common spec, k1, k2, s
@@ -6,13 +6,13 @@ pro spec, i, png=png, eps=eps
   if not keyword_set(eps) then eps = 0
   if not keyword_set(png) then png = 0 ; if eps eq 1, png has no effect
 
-  load, i
+  load, p, i
 
   tone = 255
   if eps then begin
     tone = 191
     set_plot, 'ps'
-    device, filename='s' + string(i, format='(i04)') + '.eps', /encap
+    device, filename=p + string(i, format='(i04)') + '.eps', /encap
     device, /color, /decomposed, /inch, xSize=4, ySize=4
   endif else $
     window, 0, xSize=512, ySize=512, retain=2
@@ -40,6 +40,6 @@ pro spec, i, png=png, eps=eps
     device, /close
     set_plot, 'x'
   endif else if png then $
-    write_png, 's' + string(i, format='(i04)') + '.png', tvrd(/true)
+    write_png, p + string(i, format='(i04)') + '.png', tvrd(/true)
 
 end

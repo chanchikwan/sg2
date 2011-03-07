@@ -47,11 +47,12 @@ int main(int argc, char *argv[])
       case 'm': if(HAS_ARG) { mu = atof(argv[++i]); break; }
       case 'f': if(HAS_ARG) { fi = atof(argv[++i]); break; }
       case 'k': if(HAS_ARG) { ki = atof(argv[++i]); break; }
-      case 'T': if(HAS_ARG) { tt = atof(argv[++i]); break; }
-      case 'N': if(HAS_ARG) { n0 = atoi(argv[++i]);
+      case 't': if(HAS_ARG) { tt = atof(argv[++i]); break; }
+      case 's': if(HAS_ARG) { n0 = atoi(argv[++i]);
                 if(HAS_ARG)   n1 = atoi(argv[++i]);
                 if(HAS_ARG)   n2 = atoi(argv[++i]); break; }
-      default : printf("Ignore \"%s\"\n", argv[i]);
+      case 'o': if(HAS_ARG) { setprefix(argv[++i]); break; }
+      default : printf("  Ignore \"%s\"\n", argv[i]);
     }
   }
 

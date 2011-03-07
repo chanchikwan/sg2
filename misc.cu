@@ -1,5 +1,11 @@
 #include <stdio.h>
+#include <string.h>
 #include "ihd.h"
+
+void setprefix(const char *prefix)
+{
+  strcat(Prefix, prefix);
+}
 
 int exist(const char *name)
 {

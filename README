@@ -1,0 +1,77 @@
+ihd is a simple 2D spectral hydrodynamic code written in CUDA C
+
+CONVENTIONS: let u be the two dimensional velocity.  We define the
+  stream function f such that
+
+    u = curl(f).
+
+  In component form, we have ux = df/dy, uy = -df/dx.  It is fine that
+  we do not distinguish between the scalar f and the vector (0, 0, f)
+  in this README file.  The vorticity is defined as
+
+    w = curl(u).
+
+  Similarly, we do not distinguish between w or (0, 0, w).  It is
+  clear that the stream function and the vorticity satisfy the
+  following Possion equation:
+
+    w = - grad^2 f,
+
+  or, in the Fourier space,
+
+    W_k = k^2 F_k.  (*)
+
+  We will use nu to denote the kinematic viscosity.  We will also use
+
+    J(f, w; x, y) = (df/dx)(dw/dy) - (dw/dx)(df/dy)
+
+  to denote the Jacobian determinant.
+
+EQUATION: from equation (*), it is clear that W_k falls off slower
+  than F_k.  For a pseudospectral (or collocation) method, it is
+  better to solve the vorticity equation
+
+    dw/dt - J(f, w) = nu grad^2 w,
+
+  instead of the stream function equation because of the finite
+  precision in the fast Fourier transforms.
+
+  For Galerkin spectral method, we keep track of the Fourier modes in
+  stead of the functions.  This allows easy implementation of implicit
+  or semi-implicit integrators for the linear terms.  Although
+  evolving the stream function does not reduce accuracy in Galerkin
+  spectral method, we will stick with the vorticity equation.
+
+TIME-STEP: The stability condition for the explicit (advection) step
+  is u dt < 3.34 / K.  Using K = n / 3, we have
+
+    dt u n < 10.0
+
+  The stability condition for the implicit (diffusive) step is
+  1 - 0.5 dt (alpha[i+1] - alpha[i]) (nu K^2 + mu) >= 0.  Because
+  max(alpha[i+1] - alpha[i]) ~ 0.336 for 4th-order Runge-Kutta/Crank-
+  Nicolson, we have
+
+    dt (nu n^2 / 9 + mu) < (2 / 0.336) ~ 5.95
+
+  The overall stable time step is the smaller one.
+
+FORCING: we implemented two kinds of forcings.  One is determinated
+  Kolmogorov forcing, and the other one is random forcing at a given
+  wavenumber.  Both forcing terms are implemented in force.cu.
+
+  For the Kolmogorov forcing, we use the following equation:
+
+    f_K(x, y) = fi ki cos(ki x)
+
+  where fi and ki are paramters describing the amplitue and wavenumber
+  of the forcing.  This forcing is integrated explicitly in the
+  low-storage 4th-order Runge-Kutta method.
+
+  For random forcing, we use
+
+    f_r(x, y) = fi ki exp[i (kix x + kiy y)] / sqrt(dt)
+
+  and update the vorticity at the end of each Runge-Kutta (full) step.
+  The update is only 1st order in time.  The randomness comes in
+  because of a phase and the direction of ki.

@@ -22,7 +22,7 @@ typedef struct {R r, i;} C;
 extern Z N1, N2, H2, F2, Seed;
 extern uint3 Bsz, Gsz, Hsz;
 
-extern R *w, *Host;
+extern R *w, *Host, CFL;
 extern C *W, *X, *Y;
 
 extern char Prefix[];
@@ -41,7 +41,7 @@ int frame(const char *);
 const char *name(Z);
 
 /* Setup, helpers, and drivers */
-void setup(Z, Z);
+void setup(R, Z, Z);
 int  solve(R, R, R, R, R, Z, Z);
 R    getdt(R, R, R);
 

@@ -15,10 +15,10 @@ int solve(R nu, R mu, R fi, R ki, R tt, Z i, Z n)
 
   for(++i; i <= n; ++i) {
     float ms;
-    Z ns = (Z)ceil(tt / n / 0.9 / getdt(1.0, nu, mu)), j;
+    Z ns = (Z)ceil(tt / n / getdt(1.0, nu, mu)), j;
     R dt =         tt / n / ns;
-    printf("[%10d] %4d: %5.2f -> %5.2f, dt ~ %.0e:       ",
-           (int)Seed, i, dt * ns * (i-1), dt * ns * i, dt);
+    printf("%4d: %5.2f -> %5.2f, dt ~ %.0e:       ",
+           i, dt * ns * (i-1), dt * ns * i, dt);
 
     cudaEventRecord(t0, 0);
     for(j = 0; j < ns; ++j) {

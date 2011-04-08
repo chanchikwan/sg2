@@ -6,7 +6,7 @@
 Z N1, N2, H2, F2, Seed = 1;
 uint3 Bsz, Gsz, Hsz;
 
-R *w, *Host;
+R *w, *Host, CFL;
 C *W, *X, *Y;
 
 char Prefix[8] = "";
@@ -23,7 +23,7 @@ static void done(void)
   free(Host);
 }
 
-void setup(Z n1, Z n2)
+void setup(R cfl, Z n1, Z n2)
 {
   cudaDeviceProp dev;
   Z m;
@@ -33,6 +33,7 @@ void setup(Z n1, Z n2)
   cudaGetDeviceProperties(&dev, 0);
   m = dev.maxThreadsPerBlock;
 
+  CFL= cfl;
   N1 = n1;
   N2 = n2;
   H2 = n2 / 2 + 1; /* number of non-redundant coefficients */

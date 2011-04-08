@@ -45,7 +45,7 @@ void setup(Z, Z);
 int  solve(R, R, R, R, R, Z, Z);
 R    getdt(R, R, R);
 
-R *init(R *, R (*)(R, R));
+R *init(R *, const char *);
 R *load(R *, const char *);
 R *dump(const char *, R *);
 

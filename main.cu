@@ -1,29 +1,12 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <math.h>
 #include "ihd.h"
 
 #define HAS_ARG (i+1 < argc && argv[i+1][0] != '-')
 
-R noise(R x, R y)
-{
-  return 0.5 - (R)(Seed = rand()) / (RAND_MAX + 1.0);
-}
-
-R decay(R x, R y)
-{
-  return 1024.0 * noise(x, y); /* so u = curl(w) ~ 1 */
-}
-
-R KH(R x, R y)
-{
-  return noise(x, y) + (fabs(x - 0.0 ) < 1.0e-6 ? -512.0 : 0.0)
-                     + (fabs(x - M_PI) < 1.0e-6 ?  512.0 : 0.0);
-}
-
 int main(int argc, char *argv[])
 {
-  const char *input = NULL;
+  const char *input = "zeros";
 
   R nu = 1.0e-5, mu = 1.0e-2;
   R fi = 5.0e-2, ki = 1.0e+2;
@@ -67,11 +50,11 @@ int main(int argc, char *argv[])
       printf("\"%s\" with %g MiB of memory\n",
              prop.name, prop.totalGlobalMem / 1024.0 / 1024.0);
     else {
-      fprintf(stderr, "fail to access device\n");
+      fprintf(stderr, "fail to access device, QUIT\n");
       exit(-1);
     }
   } else {
-    fprintf(stderr, "device id is too large\n");
+    fprintf(stderr, "device id is too large, QUIT\n");
     exit(-1);
   }
 
@@ -83,16 +66,28 @@ int main(int argc, char *argv[])
   setup(n1, n2);
 
   /* Load input file or initialize the fields */
-  printf("Input/init  :\t\"%s\"", input ? input : "none");
-  if(input && exist(input) && load(w, input)) {
-    scale(forward(W, w), 1.0 / (n1 * n2));
-    printf(", LOADED\n");
-    i = frame(input);
+  if(exist(input)) {
+    printf("Input file  :\t");
+    if(load(w, input)) {
+      scale(forward(W, w), 1.0 / (n1 * n2));
+      printf("loaded \"%s\"\n", input);
+      i = frame(input);
+    } else {
+      fflush(stdout);
+      fprintf(stderr, "invalid input file \"%s\", QUIT\n", input);
+      exit(-1);
+    }
   } else {
-    if(input) printf(", FAILED TO LOAD");
-    scale(forward(W, init(w, noise)), 1.0 / (n1 * n2));
-    printf(", so initialized with noise\n");
-    dump(name(i = 0), inverse(w, W));
+    printf("Initialize  :\t");
+    if(init(w, input)) {
+      scale(forward(W, w), 1.0 / (n1 * n2));
+      printf("\"%s\"\n", input);
+      dump(name(i = 0), inverse(w, W));
+    } else {
+      fflush(stdout);
+      fprintf(stderr, "invalid initial condition \"%s\", QUIT\n", input);
+      exit(-1);
+    }
   }
 
   /* Really solve the problem */

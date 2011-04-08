@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <cufft.h>
 #include "ihd.h"
 

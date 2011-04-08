@@ -8,7 +8,7 @@ void usage(int status)
     fprintf(stderr, "Try `ihd --help' for more information.\n");
   else
     fprintf(stdout, "Usage: ihd [OPTION...] [INPUT_FILE]\n\
-2D spectral hydrodynamic code with CUDA\n\
+Spectral Galerkin Incompressible Hydrodynamic in 2D (with CUDA)\n\
 \n\
       --help        display this help and exit\n\
   -d                device id\n\

@@ -17,8 +17,8 @@ int solve(R nu, R mu, R fi, R ki, R tt, Z i, Z n)
     float ms;
     Z ns = (Z)ceil(tt / n / 0.9 / getdt(1.0, nu, mu)), j;
     R dt =         tt / n / ns;
-    printf("%4d: %5.2f -> %5.2f, dt ~ %.0e:       ",
-           i, dt * ns * (i-1), dt * ns * i, dt);
+    printf("[%10d] %4d: %5.2f -> %5.2f, dt ~ %.0e:       ",
+           (int)Seed, i, dt * ns * (i-1), dt * ns * i, dt);
 
     cudaEventRecord(t0, 0);
     for(j = 0; j < ns; ++j) {
@@ -34,6 +34,7 @@ int solve(R nu, R mu, R fi, R ki, R tt, Z i, Z n)
            ms, 1e-6 * flop / ms);
 
     dump(name(i), inverse(w, W));
+    scale(forward(W, w), 1.0 / (N1 * N2));
   }
 
   printf("======================= Done  Simulation =======================\n");

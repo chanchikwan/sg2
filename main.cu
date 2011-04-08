@@ -69,9 +69,9 @@ int main(int argc, char *argv[])
   if(exist(input)) {
     printf("Input file  :\t");
     if(load(w, input)) {
-      scale(forward(W, w), 1.0 / (n1 * n2));
-      printf("loaded \"%s\"\n", input);
       i = frame(input);
+      printf("loaded \"%s\"\n", input);
+      scale(forward(W, w), 1.0 / (n1 * n2));
     } else {
       fflush(stdout);
       fprintf(stderr, "invalid input file \"%s\", QUIT\n", input);
@@ -80,9 +80,9 @@ int main(int argc, char *argv[])
   } else {
     printf("Initialize  :\t");
     if(init(w, input)) {
-      scale(forward(W, w), 1.0 / (n1 * n2));
+      dump(name(i = 0), w);
       printf("\"%s\"\n", input);
-      dump(name(i = 0), inverse(w, W));
+      scale(forward(W, w), 1.0 / (n1 * n2));
     } else {
       fflush(stdout);
       fprintf(stderr, "invalid initial condition \"%s\", QUIT\n", input);

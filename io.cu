@@ -14,7 +14,7 @@ R *load(R *f, const char *name)
     fread(Host, sizeof(R), N1 * N2, file);
     fclose(file);
     cudaMemcpy(f, Host, sizeof(R) * N1 * N2, cudaMemcpyHostToDevice);
-    srand(size[3]);
+    srand(Seed = size[3]);
     return f;
   } else {
     fclose(file);

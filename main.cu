@@ -23,6 +23,9 @@ R KH(R x, R y)
 
 int main(int argc, char *argv[])
 {
+  cudaDeviceProp prop;
+  cudaEvent_t t0, t1;
+
   const char  rotor[] = "-/|\\";
   const char *input   = NULL;
 
@@ -30,14 +33,12 @@ int main(int argc, char *argv[])
   R fi = 5.0e-2, ki = 1.0e+2;
   R tt = 1024.0, fo;
 
-  Z n0 = 1024, n1 = 1024, n2 = 1024, i;
-
-  cudaEvent_t t0, t1;
-  cudaEventCreate(&t0);
-  cudaEventCreate(&t1);
+  Z n0 = 1024, n1 = 1024, n2 = 1024;
+  Z id = 0, i;
 
   for(i = 1; i < argc; ++i) if(!strcmp(argv[i], "--help")) usage(0);
-  printf("2D spectral hydrodynamic code with CUDA\n\n");
+
+  printf("2D spectral hydrodynamic code with CUDA\n");
 
   for(i = 1; i < argc; ++i) {
     /* Arguments do not start with '-' are input file names */
@@ -45,6 +46,7 @@ int main(int argc, char *argv[])
       input = argv[i];
     /* Arguments start with '-' are options */
     else switch(argv[i][1]) {
+      case 'd': if(HAS_ARG) { id = atoi(argv[++i]); break; }
       case 'n': if(HAS_ARG) { nu = atof(argv[++i]); break; }
       case 'm': if(HAS_ARG) { mu = atof(argv[++i]); break; }
       case 'f': if(HAS_ARG) { fi = atof(argv[++i]); break; }
@@ -58,11 +60,18 @@ int main(int argc, char *argv[])
     }
   }
 
+  cudaGetDeviceCount(&i);
+  printf("Device %d/%d  ", id, i);
+  cudaGetDeviceProperties(&prop, id);
+  printf(":\t\"%s\" with %g MiB of memory\n",
+         prop.name, prop.totalGlobalMem / 1024.0 / 1024.0);
+  cudaSetDevice(id); /* set device after printing number of devices */
+
   printf("Dissipation :\tnu = %g,\tmu = %g\n", nu, mu);
   printf("Forcing     :\tfi = %g,\tki = %g\n", fi, ki);
   printf("Time        :\ttt = %g,\tnt = %d\n", tt, n0);
   printf("Resolution  :\tn1 = %d,\tn2 = %d\n", n1, n2);
-  printf("Input/init  :\t\"%s\", ", input ? input : "none");
+  printf("Input/init  :\t\"%s\"", input ? input : "none");
 
   setup(n1, n2);
   fo = 5 * n1 * n2 * (21.5 + (fi * ki > 0.0 ? 0 : 8) +
@@ -70,16 +79,18 @@ int main(int argc, char *argv[])
 
   if(input && exist(input) && load(w, input)) {
     scale(forward(W, w), 1.0 / (n1 * n2));
-    printf("LOADED\n");
+    printf(", LOADED\n");
     i = frame(input);
   } else {
-    if(input) printf("FAILED TO LOAD, ");
+    if(input) printf(", FAILED TO LOAD, ");
     scale(forward(W, init(w, noise)), 1.0 / (n1 * n2));
-    printf("initialized with noise\n");
+    printf(" so initialized with noise\n");
     dump(name(i = 0), inverse(w, W));
   }
 
-  printf("======================= Start simulation =======================\n");
+  printf("======================= Start Simulation =======================\n");
+  cudaEventCreate(&t0);
+  cudaEventCreate(&t1);
 
   for(++i; i <= n0; ++i) {
     float ms;
@@ -106,6 +117,7 @@ int main(int argc, char *argv[])
 
   cudaEventDestroy(t1);
   cudaEventDestroy(t0);
+  printf("======================= Done  Simulation =======================\n");
 
   return 0;
 }

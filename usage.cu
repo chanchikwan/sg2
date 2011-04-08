@@ -11,6 +11,7 @@ void usage(int status)
 2D spectral hydrodynamic code with CUDA\n\
 \n\
       --help        display this help and exit\n\
+  -d                device id\n\
   -n                kinematic viscosity\n\
   -m                Ekman coefficient\n\
   -f                forcing amplitude\n\

@@ -12,13 +12,13 @@ void usage(int status)
 \n\
       --help        display this help and exit\n\
   -d                device id\n\
-  -n                kinematic viscosity\n\
-  -m                Ekman coefficient\n\
   -f                forcing amplitude\n\
   -k                forcing wavenumber\n\
-  -t                total time\n\
-  -s                number of frames and grids\n\
+  -m                Ekman coefficient\n\
+  -n                kinematic viscosity\n\
   -o                prefix of the outputs\n\
+  -s                number of frames and grids\n\
+  -t                total time\n\
 \n\
 Report bugs to <ckch@nordita.org>.\n");
 

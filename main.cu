@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
 
   for(i = 1; i < argc; ++i) if(!strcmp(argv[i], "--help")) usage(0);
 
-  printf("2D spectral hydrodynamic code with CUDA\n");
+  printf("Spectral Galerkin Incompressible Hydrodynamic in 2D (with CUDA)\n");
 
   for(i = 1; i < argc; ++i) {
     /* Arguments do not start with '-' are input file names */
@@ -71,11 +71,12 @@ int main(int argc, char *argv[])
   printf("Forcing     :\tfi = %g,\tki = %g\n", fi, ki);
   printf("Time        :\ttt = %g,\tnt = %d\n", tt, n0);
   printf("Resolution  :\tn1 = %d,\tn2 = %d\n", n1, n2);
-  printf("Input/init  :\t\"%s\"", input ? input : "none");
 
   setup(n1, n2);
   fo = 5 * n1 * n2 * (21.5 + (fi * ki > 0.0 ? 0 : 8) +
                       12.5 * (log2((double)n1) + log2((double)n2)));
+
+  printf("Input/init  :\t\"%s\"", input ? input : "none");
 
   if(input && exist(input) && load(w, input)) {
     scale(forward(W, w), 1.0 / (n1 * n2));

@@ -1,12 +1,15 @@
-pro load, p, i, surf=surf, view=view
+pro load, pre, num, surf=surf, view=view
 
   common func, n1, n2, f
   common spec, k1, k2, s
 
-  if n_elements(i) eq 0 then begin
-    i = p
+  if n_elements(num) eq 0 then begin
     p = ''
-  endif
+    i = pre
+  endif else begin
+    p = pre
+    i = num
+  endelse
 
   if not keyword_set(surf) then surf = 0
   if not keyword_set(view) then view = 0

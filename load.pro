@@ -1,4 +1,4 @@
-pro load, pre, num, surf=surf, view=view
+pro load, pre, num, surf=surf, view=view, quiet=quiet
 
   common func, n1, n2, f
   common spec, k1, k2, s
@@ -11,11 +11,12 @@ pro load, pre, num, surf=surf, view=view
     i = num
   endelse
 
-  if not keyword_set(surf) then surf = 0
-  if not keyword_set(view) then view = 0
+  if not keyword_set(surf ) then surf  = 0
+  if not keyword_set(view ) then view  = 0
+  if not keyword_set(quiet) then quiet = 0
 
   name = p + string(i, format='(i04)') + '.raw'
-  print, 'loading: ' + name
+  if not quiet then print, 'loading: ' + name
 
   openr, lun, name, /get_lun
 

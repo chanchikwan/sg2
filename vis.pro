@@ -1,15 +1,22 @@
-pro vis, p, i, png=png
+pro vis, pre, num, png=png
 
-  common func, n1, n2, f
-
+  if n_elements(num) eq 0 then begin
+    p = ''
+    i = pre
+  endif else begin
+    p = pre
+    i = num
+  endelse
   if not keyword_set(png) then png = 0
 
   m1 = 512
   m2 = 512
 
-  load, p, i
+  f  = transpose(real_part(fft(load(p, i), /inverse)))
+  n  = size(f, /dimensions)
+  n1 = n[0]
+  n2 = n[1]
 
-  print, max(f)
   pos = 8 * ( f / sqrt(n1 * n2) > 0)^.33
   neg = 8 * (-f / sqrt(n1 * n2) > 0)^.33
 

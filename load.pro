@@ -1,7 +1,4 @@
-pro load, pre, num, surf=surf, view=view, quiet=quiet
-
-  common func, n1, n2, f
-  common spec, k1, k2, s
+function load, pre, num, quiet=quiet, odd=odd, check=check, view=view
 
   if n_elements(num) eq 0 then begin
     p = ''
@@ -10,10 +7,10 @@ pro load, pre, num, surf=surf, view=view, quiet=quiet
     p = pre
     i = num
   endelse
-
-  if not keyword_set(surf ) then surf  = 0
-  if not keyword_set(view ) then view  = 0
   if not keyword_set(quiet) then quiet = 0
+  if not keyword_set(odd  ) then odd   = 0
+  if not keyword_set(check) then check = 0
+  if not keyword_set(view ) then view  = 0
 
   name = p + string(i, format='(i04)') + '.raw'
   if not quiet then print, 'loading: ' + name
@@ -24,25 +21,27 @@ pro load, pre, num, surf=surf, view=view, quiet=quiet
     n = lonarr(4)
     readu, lun, n
     n1 = n[1]
-    n2 = n[2]
+    h2 = n[2]
 
     ; load vorticity
-    if n[0] eq 8 then f = dblarr(n2, n1) $
-    else              f = fltarr(n2, n1)
-    readu, lun, f
-    f = transpose(f)
+    if n[0] eq -8 then h =  complexarr(h2, n1) $
+    else               h = dcomplexarr(h2, n1)
+    readu, lun, h
 
   close, lun & free_lun, lun
 
-  ; construct k-grid
-  k1 = [dindgen(n1-n1/2), -reverse(dindgen(n1/2)+1)]
-  k2 = [dindgen(n2-n2/2), -reverse(dindgen(n2/2)+1)]
-  k1 =           rebin(k1, n1, n2)
-  k2 = transpose(rebin(k2, n2, n1))
+  ; constructe the full spectral array
+  u = reverse([[h[1:*,0]], [reverse(h[1:*,1:*],2)]])
+  s = [h[0:h2-2+odd,*], conj(u)]
 
-  ; obtain fft
-  s = fft(f)
-  if surf then shade_surf, 2 * alog10(abs(s)) > (-16)
-  if view then tvscl, 2 * alog10(abs(s)) > (-16)
+  if check then begin
+    f  = fft(s, /inverse, /double)
+    Re = real_part(f)
+    Im = imaginary(f)
+    print, 'max(abs(Im)) / max(abs(Re)) = ', max(abs(Im)) / max(abs(Re))
+  endif
+  if view then tvscl, (2 * alog10(abs(s))) > (-16)
+
+  return, s
 
 end

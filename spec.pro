@@ -1,13 +1,28 @@
-pro spec, p, i, png=png, eps=eps
+pro spec, pre, num, png=png, eps=eps
 
-  common func, n1, n2, f
-  common spec, k1, k2, s
-
+  if n_elements(num) eq 0 then begin
+    p = ''
+    i = pre
+  endif else begin
+    p = pre
+    i = num
+  endelse
   if not keyword_set(eps) then eps = 0
   if not keyword_set(png) then png = 0 ; if eps eq 1, png has no effect
 
-  load, p, i
+  ; load data
+  s  = load(p, i)
+  n  = size(s, /dimensions)
+  n1 = n[0]
+  n2 = n[1]
 
+  ; construct k-grid
+  k1 = [dindgen(n1-n1/2), -reverse(dindgen(n1/2)+1)]
+  k2 = [dindgen(n2-n2/2), -reverse(dindgen(n2/2)+1)]
+  k1 =           rebin(k1, n1, n2)
+  k2 = transpose(rebin(k2, n2, n1))
+
+  ; setup
   tone = 255
   if eps then begin
     tone = 191

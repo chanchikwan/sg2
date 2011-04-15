@@ -33,8 +33,7 @@ int solve(R nu, R mu, R fi, R ki, R tt, Z i, Z n)
     printf("\b\b\b\b\b\b%.3f ms/cycle ~ %.3f GFLOPS\n",
            ms, 1e-6 * flop / ms);
 
-    dump(name(i), inverse(w, W));
-    scale(forward(W, w), 1.0 / (N1 * N2));
+    dump(name(i), W);
   }
 
   printf("======================= Done  Simulation =======================\n");

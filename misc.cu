@@ -13,9 +13,10 @@ int exist(const char *name)
   if(file) {
     Z size[3];
     fread(size, sizeof(Z), 3, file);
-    if(size[0] == sizeof(R) &&
-       size[1] == N1        &&
-       size[2] == N2          )
+
+    if(size[0] == -(Z)sizeof(C) &&
+       size[1] == N1            &&
+       size[2] == H2            )
       return 1;
   }
   return 0;

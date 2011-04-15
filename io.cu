@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include "ihd.h"
 
-R *load(R *f, const char *name)
+C *load(C *F, const char *name)
 {
   FILE *file;
   Z     size[4];
@@ -10,29 +10,31 @@ R *load(R *f, const char *name)
   file = fopen(name, "rb");
   fread(size, sizeof(Z), 4, file);
 
-  if(size[0] == sizeof(R) && size[1] == N1 && size[2] == N2) {
-    fread(Host, sizeof(R), N1 * N2, file);
+  if(size[0] == -(Z)sizeof(C) &&
+     size[1] == N1            &&
+     size[2] == H2            ) {
+    fread(Host, sizeof(C), N1 * H2, file);
     fclose(file);
-    cudaMemcpy(f, Host, sizeof(R) * N1 * N2, cudaMemcpyHostToDevice);
+    cudaMemcpy(F, Host, sizeof(C) * N1 * H2, cudaMemcpyHostToDevice);
     srand(Seed = size[3]);
-    return f;
+    return F;
   } else {
     fclose(file);
     return NULL;
   }
 }
 
-R *dump(const char *name, R *f)
+C *dump(const char *name, C *F)
 {
   FILE *file;
-  Z     size[4] = {sizeof(R), N1, N2, Seed};
+  Z     size[4] = {-(Z)sizeof(C), N1, H2, Seed};
 
-  cudaMemcpy(Host, f, sizeof(R) * N1 * N2, cudaMemcpyDeviceToHost);
+  cudaMemcpy(Host, F, sizeof(C) * N1 * H2, cudaMemcpyDeviceToHost);
 
   file = fopen(name, "wb");
   fwrite(size, sizeof(Z), 4,       file);
-  fwrite(Host, sizeof(R), N1 * N2, file);
+  fwrite(Host, sizeof(C), N1 * H2, file);
   fclose(file);
 
-  return f;
+  return F;
 }

@@ -24,10 +24,13 @@ static R KH(R x, R y)
                      + (fabs(x - M_PI) < 1.0e-6 ?  512.0 : 0.0);
 }
 
-R *init(R *f, const char *name)
+C *init(C *F, const char *name)
 {
   const R d1 = TWO_PI / N1;
   const R d2 = TWO_PI / N2;
+
+  R *h = (R *)Host;
+  R *f = (R *)F;
 
   R (*func)(R, R);
   Z i, j;
@@ -38,11 +41,11 @@ R *init(R *f, const char *name)
   else if(!strcmp(name, "KH"   )) func = KH;
   else return NULL;
 
-  for(i = 0; i < N1; ++i)
-    for(j = 0; j < N2; ++j)
-      Host[i * N2 + j] = func(d1 * i, d2 * j);
+  for(i = 0; i < N1; ++i) {
+    for(j = 0; j < N2; ++j) h[i * F2 + j] = func(d1 * i, d2 * j);
+    for(     ; j < F2; ++j) h[i * F2 + j] = 0.0;
+  }
 
-  cudaMemcpy(f, Host, sizeof(R) * N1 * N2, cudaMemcpyHostToDevice);
-
-  return f;
+  cudaMemcpy(f, h, sizeof(R) * N1 * F2, cudaMemcpyHostToDevice);
+  return scale(forward(F, f), 1.0 / (N1 * N2));
 }

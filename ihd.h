@@ -22,8 +22,8 @@ typedef struct {R r, i;} C;
 extern Z N1, N2, H2, F2, Seed;
 extern uint3 Bsz, Gsz, Hsz;
 
-extern R *w, *Host, CFL;
-extern C *W, *X, *Y;
+extern R *w, CFL;
+extern C *W, *X, *Y, *Host;
 
 extern char Prefix[];
 
@@ -45,9 +45,9 @@ void setup(R, Z, Z);
 int  solve(R, R, R, R, R, Z, Z);
 R    getdt(R, R, R);
 
-R *init(R *, const char *);
-R *load(R *, const char *);
-R *dump(const char *, R *);
+C *init(C *, const char *);
+C *load(C *, const char *);
+C *dump(const char *, C *);
 
 /* Computation kernels */
 void dx_dd_dy(C *, C *, C *);

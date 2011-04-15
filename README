@@ -21,7 +21,8 @@ CONVENTIONS: let u be the two dimensional velocity.  We define the
 
     W_k = k^2 F_k.  (*)
 
-  We will use nu to denote the kinematic viscosity.  We will also use
+  We will use nu to denote the kinematic viscosity, mu be the Ekman
+  coefficient.  We will also use
 
     J(f, w; x, y) = (df/dx)(dw/dy) - (dw/dx)(df/dy)
 
@@ -31,7 +32,7 @@ EQUATION: from equation (*), it is clear that W_k falls off slower
   than F_k.  For a pseudospectral (or collocation) method, it is
   better to solve the vorticity equation
 
-    dw/dt - J(f, w) = nu grad^2 w,
+    dw/dt - J(f, w) = nu grad^2 w - mu w,
 
   instead of the stream function equation because of the finite
   precision in the fast Fourier transforms.
@@ -75,3 +76,34 @@ FORCING: we implemented two kinds of forcings.  One is determinated
   and update the vorticity at the end of each Runge-Kutta (full) step.
   The update is only 1st order in time.  The randomness comes in
   because of a phase and the direction of ki.
+
+ENERGY AND ENSTROPHY TRANSFER: the non-linear energy transfer (rate)
+  is one of the most important quantities in turbulence theories.  In
+  two dimension, the energy inversely cascades to large scale; while
+  the enstrophy forward cascades to small scale.  We should compute
+  both of them.
+
+  Let's write the two dimensional Navier-Stokes equation in Fourier
+  space as
+
+    (d/dt + mu + nu k^2) u_k = NL_k
+
+  where NL denotes the non-linear and pressure terms.  Using "*" to
+  denote complex conjugate, we can easily write down the energy
+  trasfer through each mode
+
+    T(k) = (d/dt + 2 mu + 2 nu k^2) u_k*.u_k = u_k*.NL_k
+
+  Because we evolve the vorticity equation in this code, it is easier
+  to compute the enstrophy transfer instead:
+
+    T_Z(k) = (d/dt + 2 mu + 2 nu k^2) w_k* w_k = w_k* J_k
+
+  We can now use the following relation to obtain the energy transfer
+
+    T(k) = - T_Z(k) / k^2.
+
+  The energy flux Pi(k) and the enstrophy flux Pi_Z(k) are given by
+
+    d/dk Pi  (k) = T  (k),
+    d/dk Pi_Z(k) = T_Z(k).

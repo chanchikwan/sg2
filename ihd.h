@@ -18,6 +18,8 @@ typedef float R;
 #endif
 typedef struct {R r, i;} C;
 
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+
 /* Ooops... global variables */
 extern Z N1, N2, H2, F2, Seed;
 extern uint3 Bsz, Gsz, Hsz;

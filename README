@@ -43,6 +43,51 @@ EQUATION: from equation (*), it is clear that W_k falls off slower
   evolving the stream function does not reduce accuracy in Galerkin
   spectral method, we will stick with the vorticity equation.
 
+NYQUIST FREQUENCY: for an n-point sampling of a real function f_i,
+  there are two modes in the Fourier space that are guaranteed to be
+  real if n is even, namely, the "mean value" F_0 and the "Nyquist
+  mode" F_KN, where KN = n / 2.
+
+  If one naively takes the derivative at the Nyquist frequency, i KN
+  F_KN becomes purely imaginary.  This seems to causes problem to
+  inverse transform back to a real function.  Nevertheless, the
+  Nyquist mode is simply [1,-1,1,-1,...] in the real space.  One can
+  therefore interpret the Nyquist mode as the super position of two
+  --- the imaginary part vanishes because of the Hermit symmetry:
+
+    F_KN = G_KN + G_{-KN} = G_KN + G_KN* = 2 Re G_KN
+
+  Taking derivatives of those two modes independently and sum them up,
+
+    i KN G_KN - i KN G_{-KN} = i KN (G_KN - G_KN*) = - 2 KN Im(G_KN).
+
+  The above expression is of course real.  There is no inconsistency
+  in taking derivative of the Nyquist mode.  However, it is impossible
+  to obtain the value Im(G_KN) from the sampling data f_i.
+
+  For simplicity, we always set F_KN = 0.  Indeed, this is done
+  automatically in the Galerkin truncation.  See next section for
+  details.
+
+GALERKIN TRUNCATION: because of the Nyquisst frequency complication
+  described above, we only keep odd number of modes along the wave-
+  space axes.  That is, along k_x, we use the modes [-K, ..., K] for
+  certain K.  K is chosen so that that are enough zeros to avoid
+  aliasing error.  I.e.,
+
+    Number of zeros = N - (2 * K + 1) >= K,
+
+  For multi-dimension problems, we zero out all modes outside the
+  circle |k| = K.  The above inequality needs to be satisfied for each
+  dimension, yet we want to keep more information that are not along
+  the axes.  Therefore, we choose
+
+    K = 0.99 + (min(N) - 1) / 3.
+
+  The division in the second term is an integer operation so it rounds
+  down.  The value 0.99 is chosen so that the test k * k <= K * K is
+  accuracy enough, even in single-precision float, for N ~ 2048.
+
 TIME-STEP: The stability condition for the explicit (advection) step
   is u dt < 3.34 / K.  Using K = n / 3, we have
 

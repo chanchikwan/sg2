@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include "ihd.h"
 
-#define MIN(a, b) ((a) < (b) ? (a) : (b))
-
 R getdt(R u, R nu, R mu)
 {
   const double n   = MIN(N1, N2);

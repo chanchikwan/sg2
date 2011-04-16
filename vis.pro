@@ -12,8 +12,7 @@ pro vis, pre, num, png=png
   m1 = 512
   m2 = 512
 
-  d  = load(p, i)
-  w  = transpose(real_part(fft(d.W, /inverse)))
+  w  = transpose(real_part(fft(load(p, i), /inverse)))
   n  = size(w, /dimensions)
   n1 = n[0]
   n2 = n[1]

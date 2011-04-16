@@ -1,4 +1,4 @@
-function load, pre, num, quiet=quiet, even=even, check=check, view=view
+function load, pre, num, quiet=quiet, nonl=nonl, check=check, view=view
 
   if n_elements(num) eq 0 then begin
     p = ''
@@ -8,7 +8,7 @@ function load, pre, num, quiet=quiet, even=even, check=check, view=view
     i = num
   endelse
   if not keyword_set(quiet) then quiet = 0
-  if not keyword_set(even ) then even  = 0
+  if not keyword_set(nonl ) then nonl  = 0
   if not keyword_set(check) then check = 0
   if not keyword_set(view ) then view  = 0
 
@@ -30,14 +30,16 @@ function load, pre, num, quiet=quiet, even=even, check=check, view=view
     ; constructe the full vorticity
     readu, lun, h
     u = reverse([[h[1:*,0]], [reverse(h[1:*,1:*],2)]])
-    W = [h[0:h2-1-even,*], conj(u)]
+    W = [h[0:h2-1,*], conj(u)]
     if view then tvscl, (2 * alog10(abs(W))) > (-16)
 
     ; constructe the full non-linear term
-    readu, lun, h
-    u = reverse([[h[1:*,0]], [reverse(h[1:*,1:*],2)]])
-    J = [h[0:h2-1-even,*], conj(u)]
-    if view then tvscl, (2 * alog10(abs(J))) > (-16)
+    if nonl then begin
+      readu, lun, h
+      u = reverse([[h[1:*,0]], [reverse(h[1:*,1:*],2)]])
+      J = [h[0:h2-1,*], conj(u)]
+      if view then tvscl, (2 * alog10(abs(J))) > (-16)
+    endif
 
   close, lun & free_lun, lun
 
@@ -45,11 +47,14 @@ function load, pre, num, quiet=quiet, even=even, check=check, view=view
     f = fft(W, /inverse, /double)
     print, 'max[abs(Im W)] / max[abs(Re W)] = ', max(abs(imaginary(f))) $
                                                / max(abs(real_part(f)))
+  endif
+  if check and nonl then begin
     f = fft(J, /inverse, /double)
     print, 'max[abs(Im J)] / max[abs(Re J)] = ', max(abs(imaginary(f))) $
                                                / max(abs(real_part(f)))
   endif
 
-  return, {W:W, J:J}
+  if nonl then return, {W:W, J:J} $
+  else         return, W
 
 end

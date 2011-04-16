@@ -11,8 +11,7 @@ pro spec, pre, num, png=png, eps=eps
   if not keyword_set(png) then png = 0 ; if eps eq 1, png has no effect
 
   ; load data
-  d  = load(p, i)
-  W  = d.W
+  W  = load(p, i)
   n  = size(W, /dimensions)
   n1 = n[0]
   n2 = n[1]

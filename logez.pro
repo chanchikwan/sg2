@@ -3,13 +3,22 @@ function getez, p, i, quiet=quiet
   common func, n1, n2, f
   common spec, k1, k2, s
 
-  load, p, i, quiet=quiet
+  ; load data
+  W  = load(p, i, quiet=quiet)
+  n  = size(W, /dimensions)
+  n1 = n[0]
+  n2 = n[1]
 
+  ; construct k-grid
+  k1 = [dindgen(n1-n1/2), -reverse(dindgen(n1/2)+1)]
+  k2 = [dindgen(n2-n2/2), -reverse(dindgen(n2/2)+1)]
+  k1 =           rebin(k1, n1, n2)
+  k2 = transpose(rebin(k2, n2, n1))
+
+  ; compute energy and enstrophy
   kk = k1^2 + k2^2
-  k  = sqrt(kk)
-  Z  = abs(s)^2 & Z[0] = 0 ; the 2D enstrophy
-  E  = Z / kk   & E[0] = 0 ; the 2D spectrum E(kx,ky)
-
+  Z  = abs(W)^2 & Z[0] = 0 ; the 2D enstrophy
+  E  = Z / kk   & E[0] = 0 ; the 2D energy spectrum E(kx,ky)
   return, {E:0.5 * total(E), Z:0.5 * total(Z)}
 
 end

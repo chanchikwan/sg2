@@ -137,18 +137,22 @@ ENERGY AND ENSTROPHY TRANSFER: the non-linear energy transfer (rate)
   denote complex conjugate, we can easily write down the energy
   trasfer through each mode
 
-    T(k) = (d/dt + 2 mu + 2 nu k^2) u_k*.u_k = u_k*.NL_k
+    T(k) = (d/dt + 2 mu + 2 nu k^2) u_k*.u_k / 2
+         = (u_k*.NL_k + u_k.NL_k*) / 2
+	 = Re(u_k*.NL_k)
 
   Because we evolve the vorticity equation in this code, it is easier
   to compute the enstrophy transfer instead:
 
-    T_Z(k) = (d/dt + 2 mu + 2 nu k^2) w_k* w_k = w_k* J_k
+    T_Z(k) = (d/dt + 2 mu + 2 nu k^2) w_k* w_k / 2
+           = (w_k* J_k + w_k J_k*) / 2
+	   = Re(w_k* J_k)
 
   We can now use the following relation to obtain the energy transfer
 
-    T(k) = - T_Z(k) / k^2.
+    T(k) = T_Z(k) / k^2.
 
   The energy flux Pi(k) and the enstrophy flux Pi_Z(k) are given by
 
-    d/dk Pi  (k) = T  (k),
-    d/dk Pi_Z(k) = T_Z(k).
+    d/dk Pi  (k) = - T  (k),
+    d/dk Pi_Z(k) = - T_Z(k).

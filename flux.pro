@@ -1,4 +1,4 @@
-pro spec, pre, num, png=png, eps=eps
+pro flux, pre, num, png=png, eps=eps
 
   if n_elements(num) eq 0 then begin
     p = ''
@@ -11,8 +11,8 @@ pro spec, pre, num, png=png, eps=eps
   if not keyword_set(png) then png = 0 ; if eps eq 1, png has no effect
 
   ; load data
-  W  = load(p, i)
-  n  = size(W, /dimensions)
+  d  = load(p, i, /nonl)
+  n  = size(d.W, /dimensions)
   n1 = n[0]
   n2 = n[1]
 
@@ -32,25 +32,21 @@ pro spec, pre, num, png=png, eps=eps
   endif else $
     window, 0, xSize=512, ySize=512, retain=2
 
-  plot, [1,min([n1,n2])/2], [1e-14,1e+2], /nodata,$
-        xTitle='Wavenumber k', yTitle='Shell-integrated energy spectrum E(k)',$
-        /xLog, /yLog, /xStyle, /yStyle
+  plot, [1,min([n1,n2])/2], [-1.2,1.2], /nodata,$
+        xTitle='Wavenumber k', $
+        yTitle=textoidl('Normalized fluxes \Pi(k) and \Pi_Z(k)'), $
+        /xLog, /xStyle, /yStyle
 
   kk = k1^2 + k2^2
   k  = sqrt(kk)
-  E  = 0.5 * abs(W)^2 / kk & E[0] = 0 ; the 2D spectrum E(kx,ky)
+  TZ = real_part(conj(d.W) * d.J) ; the enstrophy transfer
+  TE = TZ / kk & TE[0] = 0.0      ; the energy transfer
 
-  if not eps then oplot, k, E * k, psym=3, color=tone*256LL^2
+  sp = oned(k, -TZ, 250, /cumul) & FZ = sp.E
+  sp = oned(k, -TE, 250, /cumul) & FE = sp.E
 
-  sp = oned(k, E, 25)
-  k  = sp.k
-  E  = sp.E / k ; integrated spectrum E(k) = int E(kx,ky) k dphi
-                ; divided by extra k because of the log-bin
-
-  oplot, k, 1e+2 * k^(-5./3), lineStyle=1, color=tone
-  oplot, k, 1e+2 * k^(-3   ), lineStyle=2, color=tone*256LL
-  oplot, k, 1e+2 * k^(-5   ), lineStyle=3, color=tone*257LL
-  oplot, k, E, thick=2
+  oplot, sp.k, FZ / (max(abs(FZ)) + 1e-5), thick=2, color=255
+  oplot, sp.k, FE / (max(abs(FE)) + 1e-5), thick=2
 
   if eps then begin
     device, /close

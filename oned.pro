@@ -1,15 +1,32 @@
-function oned, k, E, bsz
+function oned, k, E, n, cumul=cumul
 
-  n  = ceil(alog(max(k)) / alog(bsz))
-  kb = [0,bsz^(findgen(n+1))]
-  kc = bsz^(findgen(n+1)-0.5)
-  Ec = fltarr(n+1)
+  if not keyword_set(cumul) then cumul=0
 
-  for i = 0, n do begin
-    j = where(kb[i] le k and k lt kb[i+1])
-    Ec[i] = total(E[j]) / kc[i] ; divided by kc[i] to take away the log-bin
+  kb = exp(alog(max(k)) * findgen(n + 1) / n)
+  nb = lonarr(n)
+  kc = fltarr(n)
+  Ec = fltarr(n)
+
+  for i = 0, n-1 do begin
+
+         if i eq 0   then j = where(0.0   lt k and k lt kb[i+1], count) $
+    else if i eq n-1 then j = where(kb[i] le k                 , count) $
+    else                  j = where(kb[i] le k and k lt kb[i+1], count)
+
+    nb[i] = count
+
+    if count ne 0 then begin
+      kc[i] = total(k[j]) / count
+      Ec[i] = total(E[j])
+    endif else begin
+      kc[i] = sqrt(kb[i] * kb[i+1])
+      Ec[i] = 0.0
+    endelse
+
+    if cumul and i gt 0 then Ec[i] = Ec[i] + Ec[i-1]
+
   endfor
 
-  return, {k:kc, E:Ec}
+  return, {k:kc, E:Ec, n:nb, b:kb}
 
 end

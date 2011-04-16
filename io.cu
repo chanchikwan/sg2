@@ -5,11 +5,9 @@
 C *load(C *F, const char *name)
 {
   const Z k  = (MIN(N1, N2) - 1) / 3;
+  Z i, j, size[4];
 
-  FILE *file;
-  Z i,j,size[4];
-
-  file = fopen(name, "rb");
+  FILE *file = fopen(name, "rb");
   fread(size, sizeof(Z), 4, file);
 
   if(size[0] == -(Z)sizeof(C) &&
@@ -48,23 +46,37 @@ C *dump(const char *name, C *F)
   const Z k  = (MIN(N1, N2) - 1) / 3;
   const Z n1 = 1 + k * 2;
   const Z h2 = 1 + k;
+  Z i, j, size[4] = {-(Z)sizeof(C), n1, h2, Seed};
 
-  FILE *file;
-  Z i,j,size[4] = {-(Z)sizeof(C), n1, h2, Seed};
+  FILE *file = fopen(name, "wb");
+  fwrite(size, sizeof(Z), 4, file);
 
+  /* Write the Fourier space vorticity */
   cudaMemcpy(Host, F, sizeof(C) * N1 * H2, cudaMemcpyDeviceToHost);
-
   for(i = 0; i <= k; ++i)
     for(j = 0; j <= k; ++j)
       Host[i * h2 + j] = Host[i * H2 + j];
-
   for(i = k; i >= 1; --i)
     for(j = 0; j <= k; ++j)
       Host[(n1 - i) * h2 + j] = Host[(N1 - i) * H2 + j];
-
-  file = fopen(name, "wb");
-  fwrite(size, sizeof(Z), 4,       file);
   fwrite(Host, sizeof(C), n1 * h2, file);
+
+  /* Compute the non-linear term */
+  scale(w, 0.0);
+  dx_dd_dy(X, Y, W); add_pro(w, inverse((R *)X, X), inverse((R *)Y, Y));
+  dy_dd_dx(Y, X, W); sub_pro(w, inverse((R *)Y, Y), inverse((R *)X, X));
+  forward(X, w); /* X here is just a buffer */
+
+  /* Write the Fourier space non-linear term */
+  cudaMemcpy(Host, X, sizeof(C) * N1 * H2, cudaMemcpyDeviceToHost);
+  for(i = 0; i <= k; ++i)
+    for(j = 0; j <= k; ++j)
+      Host[i * h2 + j] = Host[i * H2 + j];
+  for(i = k; i >= 1; --i)
+    for(j = 0; j <= k; ++j)
+      Host[(n1 - i) * h2 + j] = Host[(N1 - i) * H2 + j];
+  fwrite(Host, sizeof(C), n1 * h2, file);
+
   fclose(file);
 
   return F;

@@ -1,4 +1,4 @@
-function load, pre, num, quiet=quiet, odd=odd, check=check, view=view
+function load, pre, num, quiet=quiet, even=even, check=check, view=view
 
   if n_elements(num) eq 0 then begin
     p = ''
@@ -8,7 +8,7 @@ function load, pre, num, quiet=quiet, odd=odd, check=check, view=view
     i = num
   endelse
   if not keyword_set(quiet) then quiet = 0
-  if not keyword_set(odd  ) then odd   = 0
+  if not keyword_set(even ) then even  = 0
   if not keyword_set(check) then check = 0
   if not keyword_set(view ) then view  = 0
 
@@ -26,22 +26,30 @@ function load, pre, num, quiet=quiet, odd=odd, check=check, view=view
     ; load vorticity
     if n[0] eq -8 then h =  complexarr(h2, n1) $
     else               h = dcomplexarr(h2, n1)
+
+    ; constructe the full vorticity
     readu, lun, h
+    u = reverse([[h[1:*,0]], [reverse(h[1:*,1:*],2)]])
+    W = [h[0:h2-1-even,*], conj(u)]
+    if view then tvscl, (2 * alog10(abs(W))) > (-16)
+
+    ; constructe the full non-linear term
+    readu, lun, h
+    u = reverse([[h[1:*,0]], [reverse(h[1:*,1:*],2)]])
+    J = [h[0:h2-1-even,*], conj(u)]
+    if view then tvscl, (2 * alog10(abs(J))) > (-16)
 
   close, lun & free_lun, lun
 
-  ; constructe the full spectral array
-  u = reverse([[h[1:*,0]], [reverse(h[1:*,1:*],2)]])
-  s = [h[0:h2-2+odd,*], conj(u)]
-
   if check then begin
-    f  = fft(s, /inverse, /double)
-    Re = real_part(f)
-    Im = imaginary(f)
-    print, 'max(abs(Im)) / max(abs(Re)) = ', max(abs(Im)) / max(abs(Re))
+    f = fft(W, /inverse, /double)
+    print, 'max[abs(Im W)] / max[abs(Re W)] = ', max(abs(imaginary(f))) $
+                                               / max(abs(real_part(f)))
+    f = fft(J, /inverse, /double)
+    print, 'max[abs(Im J)] / max[abs(Re J)] = ', max(abs(imaginary(f))) $
+                                               / max(abs(real_part(f)))
   endif
-  if view then tvscl, (2 * alog10(abs(s))) > (-16)
 
-  return, s
+  return, {W:W, J:J}
 
 end

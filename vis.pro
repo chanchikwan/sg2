@@ -12,13 +12,14 @@ pro vis, pre, num, png=png
   m1 = 512
   m2 = 512
 
-  f  = transpose(real_part(fft(load(p, i, /odd), /inverse)))
-  n  = size(f, /dimensions)
+  d  = load(p, i)
+  w  = transpose(real_part(fft(d.W, /inverse)))
+  n  = size(w, /dimensions)
   n1 = n[0]
   n2 = n[1]
 
-  pos = 8 * ( f / sqrt(n1 * n2) > 0)^.33
-  neg = 8 * (-f / sqrt(n1 * n2) > 0)^.33
+  pos = 8 * ( w / sqrt(n1 * n2) > 0)^.33
+  neg = 8 * (-w / sqrt(n1 * n2) > 0)^.33
 
   img = fltarr(3,n1,n2)
   img[0,*,*] =       pos   + .1  * neg^3

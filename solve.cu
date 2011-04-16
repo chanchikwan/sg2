@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
 #include "ihd.h"
@@ -19,6 +20,7 @@ int solve(R nu, R mu, R fi, R ki, R tt, Z i, Z n)
     R dt =         tt / n / ns;
     printf("%4d: %5.2f -> %5.2f, dt ~ %.0e:       ",
            i, dt * ns * (i-1), dt * ns * i, dt);
+    srand(Seed);
 
     cudaEventRecord(t0, 0);
     for(j = 0; j < ns; ++j) {

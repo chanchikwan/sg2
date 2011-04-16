@@ -35,7 +35,7 @@ C *load(C *F, const char *name)
     }
 
     cudaMemcpy(F, Host, sizeof(C) * N1 * H2, cudaMemcpyHostToDevice);
-    srand(Seed = size[3]);
+    Seed = size[3];
     return F;
   } else {
     fclose(file);

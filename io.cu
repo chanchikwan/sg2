@@ -65,7 +65,7 @@ C *dump(const char *name, C *F)
   scale(w, 0.0);
   dx_dd_dy(X, Y, W); add_pro(w, inverse((R *)X, X), inverse((R *)Y, Y));
   dy_dd_dx(Y, X, W); sub_pro(w, inverse((R *)Y, Y), inverse((R *)X, X));
-  forward(X, w); /* X here is just a buffer */
+  scale(forward(X, w), 1.0 / (N1 * N2));
 
   /* Write the Fourier space non-linear term */
   cudaMemcpy(Host, X, sizeof(C) * N1 * H2, cudaMemcpyDeviceToHost);

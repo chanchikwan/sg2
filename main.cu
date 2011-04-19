@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 
   R nu = 1.0e-5, mu = 1.0e-2;
   R fi = 5.0e-2, ki = 1.0e+2;
-  R tt = 1024.0, cfl= 1.0;
+  R tt = 1024.0;
 
   Z n0 = 1024, n1 = 1024, n2 = 1024;
   Z id = 0, i;
@@ -25,13 +25,14 @@ int main(int argc, char *argv[])
     if(argv[i][0] != '-') input = argv[i];
     /* Arguments start with '-' are options */
     else switch(argv[i][1]) {
+      case 'r': if(HAS_ARG) {Seed= atoi(argv[++i]); break; }
+      case 'c': if(HAS_ARG) {CFL = atof(argv[++i]); break; }
       case 'd': if(HAS_ARG) { id = atoi(argv[++i]); break; }
       case 'n': if(HAS_ARG) { nu = atof(argv[++i]); break; }
       case 'm': if(HAS_ARG) { mu = atof(argv[++i]); break; }
       case 'f': if(HAS_ARG) { fi = atof(argv[++i]); break; }
       case 'k': if(HAS_ARG) { ki = atof(argv[++i]); break; }
       case 't': if(HAS_ARG) { tt = atof(argv[++i]); break; }
-      case 'c': if(HAS_ARG) { cfl= atof(argv[++i]); break; }
       case 's': if(HAS_ARG) { n0 = atoi(argv[++i]);
                 if(HAS_ARG)   n1 = atoi(argv[++i]);
                 if(HAS_ARG)   n2 = atoi(argv[++i]); break; }
@@ -64,7 +65,7 @@ int main(int argc, char *argv[])
   printf("Forcing     :\tfi = %g,\tki = %g\n", fi, ki);
   printf("Time        :\ttt = %g,\tnt = %d\n", tt, n0);
   printf("Resolution  :\tn1 = %d,\tn2 = %d\n", n1, n2);
-  setup(cfl, n1, n2);
+  setup(n1, n2);
 
   /* Load input file */
   if(exist(input)) {

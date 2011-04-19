@@ -43,7 +43,7 @@ int frame(const char *);
 const char *name(Z);
 
 /* Setup, helpers, and drivers */
-void setup(R, Z, Z);
+void setup(Z, Z);
 int  solve(R, R, R, R, R, Z, Z);
 R    getdt(R, R, R);
 

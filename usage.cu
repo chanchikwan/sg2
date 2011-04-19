@@ -11,12 +11,14 @@ void usage(int status)
 Spectral Galerkin Incompressible Hydrodynamic in 2D (with CUDA)\n\
 \n\
       --help        display this help and exit\n\
+  -c                Courant number for the CFL condition\n\
   -d                device id\n\
   -f                forcing amplitude\n\
   -k                forcing wavenumber\n\
   -m                Ekman coefficient\n\
   -n                kinematic viscosity\n\
   -o                prefix of the outputs\n\
+  -r                random number seed\n\
   -s                number of frames and grids\n\
   -t                total time\n\
 \n\

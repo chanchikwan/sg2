@@ -1,61 +1,45 @@
-pro spec, pre, num, png=png, eps=eps
+pro spec, p, i, eps=eps, png=png
 
-  if n_elements(num) eq 0 then begin
-    p = ''
-    i = pre
-  endif else begin
-    p = pre
-    i = num
-  endelse
-  if not keyword_set(eps) then eps = 0
-  if not keyword_set(png) then png = 0 ; if eps eq 1, png has no effect
+  if not keyword_set(eps) then eps = 0 ; if eps eq 1, png has no effect
+  if not keyword_set(png) then png = 0
 
   ; load data
   d  = load(p, i)
-  n  = size(d.W, /dimensions)
-  n1 = n[0]
-  n2 = n[1]
+  kk = getkk(d.W)
+  k  = sqrt(kk)
 
-  ; construct k-grid
-  k1 = [dindgen(n1-n1/2), -reverse(dindgen(n1/2)+1)]
-  k2 = [dindgen(n2-n2/2), -reverse(dindgen(n2/2)+1)]
-  k1 =           rebin(k1, n1, n2)
-  k2 = transpose(rebin(k2, n2, n1))
-
-  ; setup
+  ; setup device
   tone = 255
   if eps then begin
     tone = 191
     set_plot, 'ps'
-    device, filename=p + string(i, format='(i04)') + '.eps', /encap
+    device, filename=d.name + '.eps', /encap
     device, /color, /decomposed, /inch, xSize=4, ySize=4
   endif else $
     window, 0, xSize=512, ySize=512, retain=2
 
-  plot, [1,min([n1,n2])/2], [1e-14,1e+2], /nodata,$
-        xTitle='Wavenumber k', yTitle='Shell-integrated energy spectrum E(k)',$
-        /xLog, /yLog, /xStyle, /yStyle
+  ; plot frame
+  plot, [1,min(size(d.W, /dimensions))/2], [1e-14,1e+2], /nodata, $
+        xTitle='Wavenumber k', $
+        yTitle='Shell-integrated energy spectrum E(k)',$
+        /xStyle, /yStyle, /xLog, /yLog
 
-  kk = k1^2 + k2^2
-  k  = sqrt(kk)
-  E  = 0.5 * abs(d.W)^2 / kk & E[0] = 0 ; the 2D spectrum E(kx,ky)
+  Ek = 0.5 * abs(d.W)^2 / kk & Ek[0] = 0 ; the 2D spectrum E(kx,ky)
+  if not eps then oplot, k, Ek * k, psym=3, color=tone*256LL^2
 
-  if not eps then oplot, k, E * k, psym=3, color=tone*256LL^2
-
-  sp = oned(k, E, 25)
-  k  = sp.k
-  E  = sp.E / k ; integrated spectrum E(k) = int E(kx,ky) k dphi
+  s = oned(k, Ek, 25)
+  E = s.E / s.k ; integrated spectrum E(k) = int E(kx,ky) k dphi
                 ; divided by extra k because of the log-bin
 
-  oplot, k, 1e+2 * k^(-5./3), lineStyle=1, color=tone
-  oplot, k, 1e+2 * k^(-3   ), lineStyle=2, color=tone*256LL
-  oplot, k, 1e+2 * k^(-5   ), lineStyle=3, color=tone*257LL
-  oplot, k, E, thick=2
+  oplot, s.k, 1e+2 * s.k^(-5./3), lineStyle=1, color=tone
+  oplot, s.k, 1e+2 * s.k^(-3   ), lineStyle=2, color=tone*256LL
+  oplot, s.k, 1e+2 * s.k^(-5   ), lineStyle=3, color=tone*257LL
+  oplot, s.k, E, thick=2
 
   if eps then begin
     device, /close
     set_plot, 'x'
   endif else if png then $
-    write_png, p + string(i, format='(i04)') + '.png', tvrd(/true)
+    write_png, d.name + '.png', tvrd(/true)
 
 end

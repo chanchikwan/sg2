@@ -1,57 +1,42 @@
-pro flux, pre, num, png=png, eps=eps
+pro flux, p, i, eps=eps, png=png
 
-  if n_elements(num) eq 0 then begin
-    p = ''
-    i = pre
-  endif else begin
-    p = pre
-    i = num
-  endelse
-  if not keyword_set(eps) then eps = 0
-  if not keyword_set(png) then png = 0 ; if eps eq 1, png has no effect
+  if not keyword_set(eps) then eps = 0 ; if eps eq 1, png has no effect
+  if not keyword_set(png) then png = 0
 
   ; load data
   d  = load(p, i, /nonl)
-  n  = size(d.W, /dimensions)
-  n1 = n[0]
-  n2 = n[1]
+  kk = getkk(d.W)
+  k  = sqrt(kk)
 
-  ; construct k-grid
-  k1 = [dindgen(n1-n1/2), -reverse(dindgen(n1/2)+1)]
-  k2 = [dindgen(n2-n2/2), -reverse(dindgen(n2/2)+1)]
-  k1 =           rebin(k1, n1, n2)
-  k2 = transpose(rebin(k2, n2, n1))
-
-  ; setup
+  ; setup device
   tone = 255
   if eps then begin
     tone = 191
     set_plot, 'ps'
-    device, filename=p + string(i, format='(i04)') + '.eps', /encap
+    device, filename=d.name + '.eps', /encap
     device, /color, /decomposed, /inch, xSize=4, ySize=4
   endif else $
     window, 0, xSize=512, ySize=512, retain=2
 
-  plot, [1,min([n1,n2])/2], [-1.2,1.2], /nodata,$
+  ; plot frame
+  plot, [1,min(size(d.W, /dimensions))/2], [-1.2,1.2], /nodata, $
         xTitle='Wavenumber k', $
         yTitle=textoidl('Normalized fluxes \Pi(k) and \Pi_Z(k)'), $
-        /xLog, /xStyle, /yStyle
+        /xStyle, /yStyle, /xLog
 
-  kk = k1^2 + k2^2
-  k  = sqrt(kk)
   TZ = real_part(conj(d.W) * d.J) ; the enstrophy transfer
   TE = TZ / kk & TE[0] = 0.0      ; the energy transfer
 
-  sp = oned(k, -TZ, 250, /cumul) & FZ = sp.E
-  sp = oned(k, -TE, 250, /cumul) & FE = sp.E
+  s = oned(k, -TZ, 250, /cumul) & FZ = s.E
+  s = oned(k, -TE, 250, /cumul) & FE = s.E
 
-  oplot, sp.k, FZ / (max(abs(FZ)) + 1e-5), thick=2, color=255
-  oplot, sp.k, FE / (max(abs(FE)) + 1e-5), thick=2
+  oplot, s.k, FZ / (max(abs(FZ)) + 1e-5), thick=2, color=255
+  oplot, s.k, FE / (max(abs(FE)) + 1e-5), thick=2
 
   if eps then begin
     device, /close
     set_plot, 'x'
   endif else if png then $
-    write_png, p + string(i, format='(i04)') + '.png', tvrd(/true)
+    write_png, d.name + '.png', tvrd(/true)
 
 end

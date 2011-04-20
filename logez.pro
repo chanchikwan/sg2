@@ -4,8 +4,8 @@ function getez, p, i, quiet=quiet
   common spec, k1, k2, s
 
   ; load data
-  W  = load(p, i, quiet=quiet)
-  n  = size(W, /dimensions)
+  d  = load(p, i, quiet=quiet)
+  n  = size(d.W, /dimensions)
   n1 = n[0]
   n2 = n[1]
 
@@ -17,8 +17,8 @@ function getez, p, i, quiet=quiet
 
   ; compute energy and enstrophy
   kk = k1^2 + k2^2
-  Z  = abs(W)^2 & Z[0] = 0 ; the 2D enstrophy
-  E  = Z / kk   & E[0] = 0 ; the 2D energy spectrum E(kx,ky)
+  Z  = abs(d.W)^2 & Z[0] = 0 ; the 2D enstrophy
+  E  = Z / kk     & E[0] = 0 ; the 2D energy spectrum E(kx,ky)
   return, {E:0.5 * total(E), Z:0.5 * total(Z)}
 
 end

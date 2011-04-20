@@ -11,8 +11,8 @@ pro spec, pre, num, png=png, eps=eps
   if not keyword_set(png) then png = 0 ; if eps eq 1, png has no effect
 
   ; load data
-  W  = load(p, i)
-  n  = size(W, /dimensions)
+  d  = load(p, i)
+  n  = size(d.W, /dimensions)
   n1 = n[0]
   n2 = n[1]
 
@@ -38,7 +38,7 @@ pro spec, pre, num, png=png, eps=eps
 
   kk = k1^2 + k2^2
   k  = sqrt(kk)
-  E  = 0.5 * abs(W)^2 / kk & E[0] = 0 ; the 2D spectrum E(kx,ky)
+  E  = 0.5 * abs(d.W)^2 / kk & E[0] = 0 ; the 2D spectrum E(kx,ky)
 
   if not eps then oplot, k, E * k, psym=3, color=tone*256LL^2
 

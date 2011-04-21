@@ -1,39 +1,29 @@
-pro vis, pre, num, png=png
+pro vis, p, i, norm=norm, png=png, sz=sz
 
-  if n_elements(num) eq 0 then begin
-    p = ''
-    i = pre
+  d = load(p, i)
+  n = size(d.W, /dimensions)
+
+  if not keyword_set(norm) then norm = 0
+  if not keyword_set(sz  ) then sz   = n
+  if 1 eq n_elements(sz  ) then sz   = [sz, sz]
+
+  w = transpose(congrid(real_part(fft(d.W, /inverse)), sz[0], sz[1]))
+  if norm eq 0 then w = w / max(abs(w)) $
+  else              w = norm * w
+  pos = sqrt( w > 0)
+  neg = sqrt(-w > 0)
+
+  img        = fltarr(3, sz[0], sz[1])
+  img[0,*,*] = 1024 * (pos   + neg^3) < 255
+  img[1,*,*] = 1024 * (pos^2 + neg^2) < 255
+  img[2,*,*] = 1024 * (pos^3 + neg  ) < 255
+  
+  if keyword_set(png) then begin
+    write_png, d.name + '.png', img
+    if !d.window ne -1 then tv, img, /true
   endif else begin
-    p = pre
-    i = num
-  endelse
-  if not keyword_set(png) then png = 0
-
-  m1 = 512
-  m2 = 512
-
-  d  = load(p, i)
-  w  = transpose(real_part(fft(d.W, /inverse)))
-  n  = size(w, /dimensions)
-  n1 = n[0]
-  n2 = n[1]
-
-  pos = 8 * ( w / sqrt(n1 * n2) > 0)^.33
-  neg = 8 * (-w / sqrt(n1 * n2) > 0)^.33
-
-  img = fltarr(3,n1,n2)
-  img[0,*,*] =       pos   + .1  * neg^3
-  img[1,*,*] = .33 * pos^2 + .33 * neg^2
-  img[2,*,*] = .1  * pos^3 +       neg
-
-  img = congrid(256 * img, 3, m1, m2)
-  img[where(img gt 255)] = 255
-
-  if(png) then $
-    write_png, p + string(i, format='(i04)') + '.png', img $
-  else begin
-    window, 0, xSize=m1, ySize=m2
-    tv, img, /true
+    if !d.window eq -1 then window, retain=2, xSize=sz[0], ySize=sz[1]
+    tv, img, /true 
   endelse
 
 end

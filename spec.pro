@@ -15,8 +15,9 @@ pro spec, p, i, eps=eps, png=png
     set_plot, 'ps'
     device, filename=d.name + '.eps', /encap
     device, /color, /decomposed, /inch, xSize=4, ySize=4
-  endif else $
-    window, 0, xSize=512, ySize=512, retain=2
+  endif else if !d.window eq -1 then begin
+    window, retain=2, xSize=512, ySize=512
+  endif
 
   ; plot frame
   plot, [1,min(size(d.W, /dimensions))/2], [1e-14,1e+2], /nodata, $
@@ -39,7 +40,8 @@ pro spec, p, i, eps=eps, png=png
   if eps then begin
     device, /close
     set_plot, 'x'
-  endif else if png then $
+  endif else if png then begin
     write_png, d.name + '.png', tvrd(/true)
+  endif
 
 end

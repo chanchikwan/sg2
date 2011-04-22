@@ -3,18 +3,15 @@ pro spec, p, i, eps=eps, png=png
   if n_elements(i) eq 0 then name =     string(p, format='(i04)') $
   else                       name = p + string(i, format='(i04)')
 
-  s = cache(name + '.spc')
+  s = cache(name + '.sca')
   if n_elements(s) eq 0 then begin ; load data
-    W  = load(name + '.raw')
-    kk = getkk(W)
-    Ek = 0.5 * abs(W)^2 / kk & Ek[0] = 0 ; the 2D spectrum E(kx,ky)
-    s  = cache(name + '.spc', oned(sqrt(kk), Ek, 25))
+    W = load(name + '.raw')
+    Z = 0.5 * abs(W)^2 ; the enstrophy
+    s = cache(name + '.sca', oned(Z, 25))
   endif
 
   ; setup device
-  tone = 255
   if keyword_set(eps) then begin
-    tone = 127
     set_plot, 'ps'
     device, filename=name + '.eps', /encap
     device, /color, /decomposed, /inch, xSize=4, ySize=4
@@ -27,12 +24,12 @@ pro spec, p, i, eps=eps, png=png
         xTitle='Wavenumber k', title=name, $
         yTitle='Shell-integrated energy spectrum E(k)'
   
-  oplot, s.k, 1e+2 * s.k^(-5./3), lineStyle=1, color=tone
-  oplot, s.k, 1e+2 * s.k^(-3   ), lineStyle=2, color=tone*256LL
-  oplot, s.k, 1e+2 * s.k^(-5   ), lineStyle=3, color=tone*257LL
+  oplot, s.k, 1e+2 * s.k^(-5./3), lineStyle=1
+  oplot, s.k, 1e+2 * s.k^(-3   ), lineStyle=2
+  oplot, s.k, 1e+2 * s.k^(-5   ), lineStyle=3
 
   oplot, s.k, s.E/s.k, thick=2 ; integrated spectrum E(k) = int E(kx,ky) k dphi
-                               ; divided byextra k because of the log-bins
+                               ; divided by extra k because of the log-bins
   ; clean up device
   if keyword_set(eps) then begin
     device, /close

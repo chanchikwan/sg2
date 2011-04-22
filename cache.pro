@@ -7,6 +7,7 @@ function cache, name, spec, quiet=quiet
 
       printf, lun, n_elements(spec.k)
       printf, lun, spec.E
+      printf, lun, spec.Z
       printf, lun, spec.k
       printf, lun, spec.n
       printf, lun, spec.b
@@ -21,12 +22,13 @@ function cache, name, spec, quiet=quiet
 
       m = 0LL         & readf, lun, m
       E = fltarr(m)   & readf, lun, E
+      Z = fltarr(m)   & readf, lun, Z
       k = fltarr(m)   & readf, lun, k
       n = lonarr(m)   & readf, lun, n 
       b = fltarr(m+1) & readf, lun, b
 
     close, lun & free_lun, lun
-    return, {E:E, k:k, n:n, b:b}
+    return, {E:E, Z:Z, k:k, n:n, b:b}
 
   endif else return, []
 

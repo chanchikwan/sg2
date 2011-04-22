@@ -2,7 +2,7 @@ function oned, k, E, n, cumul=cumul
 
   if not keyword_set(cumul) then cumul=0
 
-  kb = exp(alog(max(k)) * findgen(n + 1) / n)
+  kb = exp(alog(min(size(k, /dimensions)) / 2 + 0.99) * findgen(n + 1) / n)
   nb = lonarr(n)
   kc = fltarr(n)
   Ec = fltarr(n)
@@ -10,7 +10,7 @@ function oned, k, E, n, cumul=cumul
   for i = 0, n-1 do begin
 
          if i eq 0   then j = where(0.0   lt k and k lt kb[i+1], count) $
-    else if i eq n-1 then j = where(kb[i] le k                 , count) $
+    else if i eq n-1 then j = where(kb[i] le k and k le kb[i+1], count) $
     else                  j = where(kb[i] le k and k lt kb[i+1], count)
 
     nb[i] = count

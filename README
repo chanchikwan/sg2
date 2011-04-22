@@ -116,11 +116,12 @@ FORCING: we implemented two kinds of forcings.  One is determinated
 
   For random forcing, we use
 
-    f_r(x, y) = fi ki exp[i (kix x + kiy y)] / sqrt(dt)
+    f_r(x, y) = 2 fi ki cos[i (kix x + kiy y)] / sqrt(dt)
 
   and update the vorticity at the end of each Runge-Kutta (full) step.
-  The update is only 1st order in time.  The randomness comes in
-  because of a phase and the direction of ki.
+  The extra factor 2 is introduced so that the energy input is simply
+  fi^2.  The update is only 1st order in time.  The randomness comes
+  in because of a phase and the direction of ki.
 
 ENERGY AND ENSTROPHY TRANSFER: the non-linear energy transfer (rate)
   is one of the most important quantities in turbulence theories.  In

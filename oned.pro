@@ -1,4 +1,4 @@
-function oned, Z, n, cumul=cumul
+function oned, Z, n
 
   kk = getkk(Z)
   E  = Z / kk & E[0] = 0.0
@@ -26,11 +26,6 @@ function oned, Z, n, cumul=cumul
     endif
 
   endfor
-
-  if keyword_set(cumul) then begin
-    Ec = total(Ec, /cumulative)
-    Zc = total(Zc, /cumulative)
-  endif
 
   return, {E:Ec, Z:Zc, k:kc, n:nb, b:kb}
 

@@ -1,4 +1,4 @@
-pro flux, p, i, eps=eps, png=png
+pro flux, p, i, n=n, eps=eps, png=png
 
   if n_elements(i) eq 0 then name =     string(p, format='(i04)') $
   else                       name = p + string(i, format='(i04)')
@@ -7,7 +7,8 @@ pro flux, p, i, eps=eps, png=png
   if n_elements(f) eq 0 then begin ; load data
     d = load(name + '.raw', /nonl)
     T = real_part(conj(d.W) * d.J) ; the enstrophy transfer
-    f = cache(name + '.fca', oned(-T, 250, /cumul))
+    if not keyword_set(n) then n = 127
+    f = cache(name + '.fca', oned(-T, n))
   endif
 
   ; setup device
@@ -24,8 +25,11 @@ pro flux, p, i, eps=eps, png=png
         xTitle='Wavenumber k', title=name, $
         yTitle=textoidl('Normalized fluxes \Pi(k) and \Pi_Z(k)')
 
-  oplot, f.k, f.E / (max(abs(f.E)) + 1e-5), thick=2
-  oplot, f.k, f.Z / (max(abs(f.Z)) + 1e-5), thick=2, color=255
+  fE = total(f.E, /cumulative)
+  fZ = total(f.Z, /cumulative)
+
+  oplot, f.k, fE / (max(abs(fE)) + 1e-5), thick=2
+  oplot, f.k, fZ / (max(abs(fZ)) + 1e-5), thick=2, color=255
 
   ; clean up device
   if keyword_set(eps) then begin

@@ -1,4 +1,4 @@
-pro spec, p, i, eps=eps, png=png
+pro spec, p, i, n=n, eps=eps, png=png
 
   if n_elements(i) eq 0 then name =     string(p, format='(i04)') $
   else                       name = p + string(i, format='(i04)')
@@ -7,7 +7,8 @@ pro spec, p, i, eps=eps, png=png
   if n_elements(s) eq 0 then begin ; load data
     W = load(name + '.raw')
     Z = 0.5 * abs(W)^2 ; the enstrophy
-    s = cache(name + '.sca', oned(Z, 25))
+    if not keyword_set(n) then n = 31
+    s = cache(name + '.sca', oned(Z, n))
   endif
 
   ; setup device

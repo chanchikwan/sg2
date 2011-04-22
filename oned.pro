@@ -2,10 +2,10 @@ function oned, k, E, n, cumul=cumul
 
   if not keyword_set(cumul) then cumul=0
 
-  kb = exp(alog(min(size(k, /dimensions)) / 2 + 0.99) * findgen(n + 1) / n)
-  nb = lonarr(n)
-  kc = fltarr(n)
   Ec = fltarr(n)
+  kc = fltarr(n)
+  nb = lonarr(n)
+  kb = exp(alog(min(size(k, /dimensions)) / 2 + 0.99) * findgen(n + 1) / n)
 
   for i = 0, n-1 do begin
 
@@ -27,6 +27,6 @@ function oned, k, E, n, cumul=cumul
 
   endfor
 
-  return, {k:kc, E:Ec, n:nb, b:kb}
+  return, {E:Ec, k:kc, n:nb, b:kb}
 
 end

@@ -1,13 +1,10 @@
-function load, p, i, quiet=quiet, nonl=nonl, show=show
+function load, name, quiet=quiet, nonl=nonl, show=show
 
-  if n_elements(i) eq 0 then name =     string(p, format='(i04)') $
-  else                       name = p + string(i, format='(i04)')
-
-  if not keyword_set(quiet) then print, 'loading: ' + name + '.raw'
+  if not keyword_set(quiet) then print, 'loading: ' + name
   if not keyword_set(nonl ) then nonl  = 0
   if not keyword_set(show ) then show  = 0
 
-  openr, lun, name + '.raw', /get_lun
+  openr, lun, name, /get_lun
 
     ; load array information
     n  = lonarr(4) & readu, lun, n
@@ -33,7 +30,7 @@ function load, p, i, quiet=quiet, nonl=nonl, show=show
 
   close, lun & free_lun, lun
 
-  if nonl then return, {name:name, W:W, J:J} $
-  else         return, {name:name, W:W}
+  if nonl then return, {W:W, J:J} $
+  else         return, W
 
 end

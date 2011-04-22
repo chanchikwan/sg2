@@ -1,47 +1,44 @@
 pro spec, p, i, eps=eps, png=png
 
-  if not keyword_set(eps) then eps = 0 ; if eps eq 1, png has no effect
-  if not keyword_set(png) then png = 0
+  if n_elements(i) eq 0 then name =     string(p, format='(i04)') $
+  else                       name = p + string(i, format='(i04)')
 
-  ; load data
-  d  = load(p, i)
-  kk = getkk(d.W)
-  k  = sqrt(kk)
+  s = cache(name + '.spc')
+  if n_elements(s) eq 0 then begin ; load data
+    W  = load(name + '.raw')
+    kk = getkk(W)
+    Ek = 0.5 * abs(W)^2 / kk & Ek[0] = 0 ; the 2D spectrum E(kx,ky)
+    s  = cache(name + '.spc', oned(sqrt(kk), Ek, 25))
+  endif
 
   ; setup device
   tone = 255
-  if eps then begin
-    tone = 191
+  if keyword_set(eps) then begin
+    tone = 127
     set_plot, 'ps'
-    device, filename=d.name + '.eps', /encap
+    device, filename=name + '.eps', /encap
     device, /color, /decomposed, /inch, xSize=4, ySize=4
   endif else if !d.window eq -1 then begin
     window, retain=2, xSize=512, ySize=512
   endif
 
-  ; plot frame
-  plot, [1,min(size(d.W, /dimensions))/2], [1e-14,1e+2], /nodata, $
-        xTitle='Wavenumber k', $
-        yTitle='Shell-integrated energy spectrum E(k)',$
-        /xStyle, /yStyle, /xLog, /yLog
-
-  Ek = 0.5 * abs(d.W)^2 / kk & Ek[0] = 0 ; the 2D spectrum E(kx,ky)
-  if not eps then oplot, k, Ek * k, psym=3, color=tone*256LL^2
-
-  s = oned(k, Ek, 25)
-  E = s.E / s.k ; integrated spectrum E(k) = int E(kx,ky) k dphi
-                ; divided by extra k because of the log-bin
-
+  ; plot
+  plot, [1,max(s.b)], [1e-14,1e+2], /nodata, /xStyle, /yStyle, /xLog, /yLog, $
+        xTitle='Wavenumber k', title=name, $
+        yTitle='Shell-integrated energy spectrum E(k)'
+  
   oplot, s.k, 1e+2 * s.k^(-5./3), lineStyle=1, color=tone
   oplot, s.k, 1e+2 * s.k^(-3   ), lineStyle=2, color=tone*256LL
   oplot, s.k, 1e+2 * s.k^(-5   ), lineStyle=3, color=tone*257LL
-  oplot, s.k, E, thick=2
 
-  if eps then begin
+  oplot, s.k, s.E/s.k, thick=2 ; integrated spectrum E(k) = int E(kx,ky) k dphi
+                               ; divided byextra k because of the log-bins
+  ; clean up device
+  if keyword_set(eps) then begin
     device, /close
     set_plot, 'x'
-  endif else if png then begin
-    write_png, d.name + '.png', tvrd(/true)
+  endif else if keyword_set(png) then begin
+    write_png, name + '.png', tvrd(/true)
   endif
 
 end

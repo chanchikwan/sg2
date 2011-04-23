@@ -35,6 +35,13 @@ int solve(R nu, R mu, R fi, R ki, R tt, Z i, Z n)
     printf("\b\b\b\b\b\b%.3f ms/cycle ~ %.3f GFLOPS\n",
            ms, 1e-6 * flop / ms);
 
+    cudaMemcpy(Host, W, sizeof(R), cudaMemcpyDeviceToHost);
+    if(Host[0].r != Host[0].r) {
+      fflush(stdout);
+      fprintf(stderr, "vorticity spectrum contains NAN, QUIT\n");
+      exit(-1);
+    }
+
     dump(name(i), W);
   }
 

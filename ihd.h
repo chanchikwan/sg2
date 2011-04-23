@@ -27,8 +27,6 @@ extern uint3 Bsz, Gsz, Hsz;
 extern R *w, CFL;
 extern C *W, *X, *Y, *Host;
 
-extern char Prefix[];
-
 /* FFT wrapper in fft.cu */
 void mkplans(Z, Z);
 void rmplans(void);

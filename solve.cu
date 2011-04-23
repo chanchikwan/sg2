@@ -3,6 +3,8 @@
 #include <math.h>
 #include "ihd.h"
 
+static R typical_v = 1.0;
+
 int solve(R nu, R mu, R fi, R ki, R tt, Z i, Z n)
 {
   const char rotor[] = "-/|\\";
@@ -16,7 +18,7 @@ int solve(R nu, R mu, R fi, R ki, R tt, Z i, Z n)
 
   for(++i; i <= n; ++i) {
     float ms;
-    Z ns = (Z)ceil(tt / n / getdt(1.0, nu, mu)), j;
+    Z ns = (Z)ceil(tt / n / getdt(typical_v, nu, mu)), j;
     R dt =         tt / n / ns;
     printf("%4d: %5.2f -> %5.2f, dt ~ %.0e:       ",
            i, dt * ns * (i-1), dt * ns * i, dt);
@@ -36,13 +38,15 @@ int solve(R nu, R mu, R fi, R ki, R tt, Z i, Z n)
            ms, 1e-6 * flop / ms);
 
     cudaMemcpy(Host, W, sizeof(R), cudaMemcpyDeviceToHost);
-    if(Host[0].r != Host[0].r) {
+    if(Host[0].r == Host[0].r) /* spectrum is finite */
+      dump(name(i), W);
+    else if(exist(name(--i)) && load(W, name(i))) /* spectrum contains NAN */
+      typical_v *= sqrt(2.0);
+    else {
       fflush(stdout);
-      fprintf(stderr, "vorticity spectrum contains NAN, QUIT\n");
+      fprintf(stderr, "diverged, fail to resume from \"%s\", QUIT\n", name(i));
       exit(-1);
     }
-
-    dump(name(i), W);
   }
 
   printf("======================= Done  Simulation =======================\n");

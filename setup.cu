@@ -6,10 +6,8 @@
 Z N1, N2, H2, F2, Seed = 1;
 uint3 Bsz, Gsz, Hsz;
 
-R *w, *Host;
-C *W, *X, *Y;
-
-char Prefix[8] = "";
+R *w, CFL = 0.8;
+C *W, *X, *Y, *Host;
 
 static void done(void)
 {
@@ -42,7 +40,7 @@ void setup(Z n1, Z n2)
   Gsz = make_uint3((N2 - 1) / Bsz.x + 1, (N1 - 1) / Bsz.y + 1, 1);
   Hsz = make_uint3((H2 - 1) / Bsz.x + 1, (N1 - 1) / Bsz.y + 1, 1);
 
-  Host = (R *)malloc(sizeof(R) * N1 * N2);
+  Host = (C *)malloc(sizeof(C) * N1 * H2);
 
   cudaMalloc(&w, sizeof(R) * N1 * F2); scale((C *)w, 0.0);
   cudaMalloc(&W, sizeof(C) * N1 * H2); scale((C *)W, 0.0);

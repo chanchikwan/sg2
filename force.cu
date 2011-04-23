@@ -70,7 +70,7 @@ static __global__ void _force2(C *f, const R fx, const R fy,
 
 C *force(C *f, R dt, R fi, R ki)
 {
-  const R fs = fi * ki * sqrt(dt) / 2.0; /* because of real-complex FFT */
+  const R fs = fi * ki * sqrt(dt); /* no factor of 2 because of FFT */
   const R dp = TWO_PI / (RAND_MAX + 1.0);
   const R pm = dp * (Seed = rand());
   const R pk = dp * (Seed = rand());

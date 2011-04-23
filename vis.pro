@@ -1,31 +1,32 @@
-pro vis, p, i, png=png
+pro vis, p, i, norm=norm, png=png, sz=sz
 
-  common func, n1, n2, f
+  if n_elements(i) eq 0 then name =     string(p, format='(i04)') $
+  else                       name = p + string(i, format='(i04)')
 
-  if not keyword_set(png) then png = 0
+  W = load(name + '.raw')
+  n = size(W, /dimensions)
 
-  m1 = 512
-  m2 = 512
+  if not keyword_set(norm) then norm = 0
+  if not keyword_set(sz  ) then sz   = n
+  if 1 eq n_elements(sz  ) then sz   = [sz, sz]
 
-  load, p, i
+  w = transpose(congrid(real_part(fft(W, /inverse)), sz[0], sz[1]))
+  if norm eq 0 then w = w / max(abs(w)) $
+  else              w = norm * w
+  pos = sqrt( w > 0)
+  neg = sqrt(-w > 0)
 
-  print, max(f)
-  pos = 8 * ( f / sqrt(n1 * n2) > 0)^.33
-  neg = 8 * (-f / sqrt(n1 * n2) > 0)^.33
-
-  img = fltarr(3,n1,n2)
-  img[0,*,*] =       pos   + .1  * neg^3
-  img[1,*,*] = .33 * pos^2 + .33 * neg^2
-  img[2,*,*] = .1  * pos^3 +       neg
-
-  img = congrid(256 * img, 3, m1, m2)
-  img[where(img gt 255)] = 255
-
-  if(png) then $
-    write_png, p + string(i, format='(i04)') + '.png', img $
-  else begin
-    window, 0, xSize=m1, ySize=m2
-    tv, img, /true
+  img        = fltarr(3, sz[0], sz[1])
+  img[0,*,*] = 1024 * (pos   + neg^3) < 255
+  img[1,*,*] = 1024 * (pos^2 + neg^2) < 255
+  img[2,*,*] = 1024 * (pos^3 + neg  ) < 255
+  
+  if keyword_set(png) then begin
+    write_png, name + '.png', img
+    if !d.window ne -1 then tv, img, /true
+  endif else begin
+    if !d.window eq -1 then window, retain=2, xSize=sz[0], ySize=sz[1]
+    tv, img, /true 
   endelse
 
 end

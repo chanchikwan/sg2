@@ -33,7 +33,7 @@ static __global__ void _evol_diff(C *f, const C *b, const R KK,
 
 void step(R nu, R mu, R fi, R ki, R dt)
 {
-  const R K = (N1 < N2 ? N1 : N2) / 3.0;
+  const R K = 0.99 + (MIN(N1, N2) - 1) / 3;
 
   const R alpha[] = {0.0,             0.1496590219993, 0.3704009573644,
                      0.6222557631345, 0.9582821306748, 1.0};

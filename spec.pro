@@ -1,45 +1,42 @@
-pro spec, p, i, png=png, eps=eps
+pro spec, p, i, n=n, eps=eps, png=png
 
-  common func, n1, n2, f
-  common spec, k1, k2, s
+  if n_elements(i) eq 0 then name =     string(p, format='(i04)') $
+  else                       name = p + string(i, format='(i04)')
 
-  if not keyword_set(eps) then eps = 0
-  if not keyword_set(png) then png = 0 ; if eps eq 1, png has no effect
+  s = cache(name + '.sca')
+  if n_elements(s) eq 0 then begin ; load data
+    W = load(name + '.raw')
+    Z = 0.5 * abs(W)^2 ; the enstrophy
+    if not keyword_set(n) then n = 31
+    s = cache(name + '.sca', oned(Z, n))
+  endif
 
-  load, p, i
-
-  tone = 255
-  if eps then begin
-    tone = 191
+  ; setup device
+  if keyword_set(eps) then begin
     set_plot, 'ps'
-    device, filename=p + string(i, format='(i04)') + '.eps', /encap
+    device, filename=name + '.eps', /encap
     device, /color, /decomposed, /inch, xSize=4, ySize=4
-  endif else $
-    window, 0, xSize=512, ySize=512, retain=2
+  endif else if !d.window eq -1 then begin
+    window, retain=2, xSize=512, ySize=512
+  endif
 
-  plot, [1,min([n1,n2])/2], [1e-14,1e+2], /nodata,$
-        xTitle='Wavenumber k', yTitle='Shell-integrated energy spectrum E(k)',$
-        /xLog, /yLog, /xStyle, /yStyle
+  ; plot
+  plot, [1,max(s.b)], [1e-14,1e+2], /nodata, /xStyle, /yStyle, /xLog, /yLog, $
+        xTitle='Wavenumber k', title=name, $
+        yTitle='Shell-integrated energy spectrum E(k)'
+  
+  oplot, s.k, 1e+2 * s.k^(-5./3), lineStyle=1
+  oplot, s.k, 1e+2 * s.k^(-3   ), lineStyle=2
+  oplot, s.k, 1e+2 * s.k^(-5   ), lineStyle=3
 
-  kk = k1^2 + k2^2
-  k  = sqrt(kk)
-  E  = abs(s)^2 / kk & E[0] = 0 ; the 2D spectrum E(kx,ky)
-
-  if not eps then oplot, k, E * k, psym=3, color=tone*256LL^2
-
-  sp = oned(k, E, 1.2)
-  k  = sp.k
-  E  = sp.E ; integrated spectrum E(k) = int E(kx,ky) k dphi
-
-  oplot, k, 1e+2 * k^(-5./3), lineStyle=1, color=tone
-  oplot, k, 1e+2 * k^(-3   ), lineStyle=2, color=tone*256LL
-  oplot, k, 1e+2 * k^(-5   ), lineStyle=3, color=tone*257LL
-  oplot, k, E, thick=2
-
-  if eps then begin
+  oplot, s.k, s.E/s.k, thick=2 ; integrated spectrum E(k) = int E(kx,ky) k dphi
+                               ; divided by extra k because of the log-bins
+  ; clean up device
+  if keyword_set(eps) then begin
     device, /close
     set_plot, 'x'
-  endif else if png then $
-    write_png, p + string(i, format='(i04)') + '.png', tvrd(/true)
+  endif else if keyword_set(png) then begin
+    write_png, name + '.png', tvrd(/true)
+  endif
 
 end

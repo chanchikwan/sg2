@@ -3,8 +3,8 @@
 
 #define TIDE 512
 
-static __global__ void _reduce(C *out, const R *x, const R *y,
-                                       const Z n1, const Z n2, const Z N2)
+static __global__ void _reduce(C *Out, const R *x, const R *y,
+                                       const Z N1, const Z N2, const Z F2)
 {
   __shared__ R max[TIDE], sum[TIDE];
 
@@ -15,8 +15,8 @@ static __global__ void _reduce(C *out, const R *x, const R *y,
   max[t] = 0.0;
   sum[t] = 0.0;
 
-  if(j < n2) for(i = 0; i < n1; ++i) {
-    const Z h  = i * N2 + j;
+  if(j < N2) for(i = 0; i < N1; ++i) {
+    const Z h  = i * F2 + j;
     const R ux = x[h];
     const R uy = y[h];
     const R uu = ux * ux + uy * uy;
@@ -34,8 +34,8 @@ static __global__ void _reduce(C *out, const R *x, const R *y,
   }
 
   if(t == 0) {
-    out[blockIdx.x].r = max[0];
-    out[blockIdx.x].i = sum[0];
+    Out[blockIdx.x].r = max[0];
+    Out[blockIdx.x].i = sum[0];
   }
 }
 

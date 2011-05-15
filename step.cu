@@ -1,32 +1,32 @@
 #include "ihd.h"
 
-static __global__ void _evol_diff(C *f, const C *b, const R KK,
+static __global__ void _evol_diff(C *W, const C *F, const R KK,
                                         const R nu, const R mu,
                                         const R im, const R ex,
-                                        const Z n1, const Z h2)
+                                        const Z N1, const Z H2)
 {
   const Z i = blockDim.y * blockIdx.y + threadIdx.y;
   const Z j = blockDim.x * blockIdx.x + threadIdx.x;
-  const Z h = i * h2 + j;
+  const Z h = i * H2 + j;
 
-  if(i < n1 && j < h2) {
-    const C g  = f[h];
-    const C c  = b[h];
-    const R kx = i < n1 / 2 ? i : i - n1;
+  if(i < N1 && j < H2) {
+    const C Wh = W[h];
+    const C Fh = F[h];
+    const R kx = i < N1 / 2 ? i : i - N1;
     const R ky = j;
     const R kk = kx * kx + ky * ky;
 
     if(kk < KK) {
-      const R imkk = im     * (nu * kk + mu);
+      const R imkk = im     * ( mu + nu * kk);
       const R temp = K(1.0) / (K(1.0) + imkk);
       const R impl = temp   * (K(1.0) - imkk);
       const R expl = temp   * ex;
 
-      f[h].r = impl * g.r + expl * c.r;
-      f[h].i = impl * g.i + expl * c.i;
+      W[h].r = impl * Wh.r + expl * Fh.r;
+      W[h].i = impl * Wh.i + expl * Fh.i;
     } else {
-      f[h].r = K(0.0);
-      f[h].i = K(0.0);
+      W[h].r = K(0.0);
+      W[h].i = K(0.0);
     }
   }
 }

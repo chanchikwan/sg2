@@ -51,6 +51,7 @@ C *load(C *, const char *);
 C *dump(const char *, C *);
 
 /* Computation kernels */
+void dx_dd_dy_dd(C *, C *, C *);
 void dx_dd_dy(C *, C *, C *);
 void dy_dd_dx(C *, C *, C *);
 R    *add_pro(R *, R *, R *);

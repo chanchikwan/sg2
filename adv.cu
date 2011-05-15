@@ -1,6 +1,37 @@
 #include "ihd.h"
 
-/* Compute df/dx and dw/dy from w for the 1st term in the Jacobian */
+/* Compute dF/dx and dF/dy from W */
+static __global__ void _dx_dd_dy_dd(C *x, C *y, const C *w,
+                                    const Z n1, const Z h2)
+{
+  const Z i = blockDim.y * blockIdx.y + threadIdx.y;
+  const Z j = blockDim.x * blockIdx.x + threadIdx.x;
+  const Z h = i * h2 + j;
+
+  if(i < n1 && j < h2) {
+    const C u = w[h];
+    R lx = i < n1 / 2 ? i : i - n1;
+    R ly = j;
+
+    if(h) {
+      const R ikk = K(1.0) / (lx * lx + ly * ly);
+      lx *= ikk;
+      ly *= ikk;
+    }
+
+    x[h].r = - lx * u.i;
+    x[h].i =   lx * u.r;
+    y[h].r = - ly * u.i;
+    y[h].i =   ly * u.r;
+  }
+}
+
+void dx_dd_dy_dd(C *x, C *y, C *w)
+{
+  _dx_dd_dy_dd<<<Hsz, Bsz>>>(X, Y, W, N1, H2);
+}
+
+/* Compute dF/dx and dW/dy from W for the 1st term in the Jacobian */
 static __global__ void _dx_dd_dy(C *x, C *y, const C *w,
                                  const Z n1, const Z h2)
 {
@@ -28,7 +59,7 @@ void dx_dd_dy(C *x, C *y, C *w)
   _dx_dd_dy<<<Hsz, Bsz>>>(x, y, w, N1, H2);
 }
 
-/* Compute df/dy and dw/dx from w for the 2nd term in the Jacobian */
+/* Compute dF/dy and dW/dx from W for the 2nd term in the Jacobian */
 static __global__ void _dy_dd_dx(C *y, C *x, const C *w,
                                  const Z n1, const Z h2)
 {

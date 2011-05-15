@@ -3,30 +3,6 @@
 
 #define TIDE 512
 
-static __global__ void _getu(C *x, C *y, const C *w, const Z n1, const Z h2)
-{
-  const Z i = blockDim.y * blockIdx.y + threadIdx.y;
-  const Z j = blockDim.x * blockIdx.x + threadIdx.x;
-  const Z h = i * h2 + j;
-
-  if(i < n1 && j < h2) {
-    const C u  = w[h];
-    R lx = i < n1 / 2 ? i : i - n1;
-    R ly = j;
-
-    if(h) {
-      const R ikk = K(1.0) / (lx * lx + ly * ly);
-      lx *= ikk;
-      ly *= ikk;
-    }
-
-    x[h].r = - lx * u.i;
-    x[h].i =   lx * u.r;
-    y[h].r = - ly * u.i;
-    y[h].i =   ly * u.r;
-  }
-}
-
 static __global__ void _reduce(C *out, const R *x, const R *y,
                                        const Z n1, const Z n2, const Z N2)
 {
@@ -78,7 +54,7 @@ R diag(void)
   Z i;
   R max = 0.0, sum = 0.0;
 
-  _getu<<<Hsz, Bsz>>>(X, Y, W, N1, H2);
+  dx_dd_dy_dd(X, Y, W);
   inverse((R *)X, X);
   inverse((R *)Y, Y);
   _reduce<<<gsz, bsz>>>((C *)w, (R *)X, (R *)Y, N1, N2, F2);

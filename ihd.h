@@ -51,9 +51,9 @@ C *load(C *, const char *);
 C *dump(const char *, C *);
 
 /* Computation kernels */
-void dx_dd_dy_dd(C *, C *, C *);
-void dx_dd_dy(C *, C *, C *);
-void dy_dd_dx(C *, C *, C *);
+void getu   (C *, C *, const C *);
+void jacobi1(C *, C *, const C *);
+void jacobi2(C *, C *, const C *);
 R    *add_pro(R *, R *, R *);
 R    *sub_pro(R *, R *, R *);
 

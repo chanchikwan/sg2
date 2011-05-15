@@ -52,8 +52,8 @@ void step(R nu, R mu, R fi, R ki, R dt)
     else
       force(w, beta[i], fi, ki); /* scaling and Kolmogorov forcing */
 
-    dx_dd_dy(X, Y, W); add_pro(w, inverse((R *)X, X), inverse((R *)Y, Y));
-    dy_dd_dx(Y, X, W); sub_pro(w, inverse((R *)Y, Y), inverse((R *)X, X));
+    jacobi1(X, Y, W); add_pro(w, inverse((R *)X, X), inverse((R *)Y, Y));
+    jacobi2(X, Y, W); sub_pro(w, inverse((R *)X, X), inverse((R *)Y, Y));
 
     forward(X, w); /* X here is just a buffer */
 

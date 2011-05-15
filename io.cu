@@ -63,8 +63,8 @@ C *dump(const char *name, C *F)
 
   /* Compute the non-linear term */
   scale(w, 0.0);
-  dx_dd_dy(X, Y, W); add_pro(w, inverse((R *)X, X), inverse((R *)Y, Y));
-  dy_dd_dx(Y, X, W); sub_pro(w, inverse((R *)Y, Y), inverse((R *)X, X));
+  jacobi1(X, Y, W); add_pro(w, inverse((R *)X, X), inverse((R *)Y, Y));
+  jacobi2(X, Y, W); sub_pro(w, inverse((R *)X, X), inverse((R *)Y, Y));
   scale(forward(X, w), 1.0 / (N1 * N2));
 
   /* Write the Fourier space non-linear term */

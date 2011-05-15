@@ -54,7 +54,7 @@ R diag(void)
   Z i;
   R max = 0.0, sum = 0.0;
 
-  dx_dd_dy_dd(X, Y, W);
+  getu(X, Y, W);
   inverse((R *)X, X);
   inverse((R *)Y, Y);
   _reduce<<<gsz, bsz>>>((C *)w, (R *)X, (R *)Y, N1, N2, F2);

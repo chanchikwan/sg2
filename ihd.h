@@ -54,8 +54,8 @@ C *dump(const char *, C *);
 void getu   (C *, C *, const C *);
 void jacobi1(C *, C *, const C *);
 void jacobi2(C *, C *, const C *);
-R    *add_pro(R *, R *, R *);
-R    *sub_pro(R *, R *, R *);
+R   *add_pro(R *, const R *, const R *);
+R   *sub_pro(R *, const R *, const R *);
 
 R *force(R *, R, R, R);
 C *force(C *, R, R, R);

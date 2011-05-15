@@ -1,37 +1,31 @@
 #include "ihd.h"
 
+#define KERN(name, op)                                          \
+  static __global__ void name(R *f, const R *x, const R *y,     \
+                        const Z N1, const Z N2, const Z F2)     \
+  {                                                             \
+    const Z i = blockDim.y * blockIdx.y + threadIdx.y;          \
+    const Z j = blockDim.x * blockIdx.x + threadIdx.x;          \
+    const Z h = i * N2 + j;                                     \
+    const Z H = i * F2 + j;                                     \
+                                                                \
+    if(i < N1 && j < N2) f[h] op x[H] * y[H];                   \
+  }
+
 /* Adding the 1st term in the Jacobian */
-static __global__ void _add_pro(R *f, const R *x, const R *y,
-                                      const Z n1, const Z n2, const Z N2)
-{
-  const Z i = blockDim.y * blockIdx.y + threadIdx.y;
-  const Z j = blockDim.x * blockIdx.x + threadIdx.x;
-  const Z h = i * n2 + j; /* will be transformed out-of-place, no padding */
-  const Z H = i * N2 + j;
+KERN(_add_pro, +=)
 
-  if(i < n1 && j < n2) f[h] += x[H] * y[H];
-}
-
-R *add_pro(R *f, R *y, R *x)
+R *add_pro(R *f, const R *x, const R *y)
 {
-  _add_pro<<<Gsz, Bsz>>>(f, y, x, N1, N2, F2);
+  _add_pro<<<Gsz, Bsz>>>(f, x, y, N1, N2, F2);
   return f;
 }
 
 /* Adding the 2nd term in the Jacobian */
-static __global__ void _sub_pro(R *f, const R *y, const R *x,
-                                      const Z n1, const Z n2, const Z N2)
-{
-  const Z i = blockDim.y * blockIdx.y + threadIdx.y;
-  const Z j = blockDim.x * blockIdx.x + threadIdx.x;
-  const Z h = i * n2 + j; /* will be transformed out-of-place, no padding */
-  const Z H = i * N2 + j;
+KERN(_sub_pro, -=)
 
-  if(i < n1 && j < n2) f[h] -= y[H] * x[H];
-}
-
-R *sub_pro(R *f, R *y, R *x)
+R *sub_pro(R *f, const R *x, const R *y)
 {
-  _sub_pro<<<Gsz, Bsz>>>(f, y, x, N1, N2, F2);
+  _sub_pro<<<Gsz, Bsz>>>(f, x, y, N1, N2, F2);
   return f;
 }

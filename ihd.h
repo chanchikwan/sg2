@@ -39,11 +39,12 @@ void setprefix(const char *);
 int exist(const char *);
 int frame(const char *);
 const char *name(Z);
+R diag(void);
 
 /* Setup, helpers, and drivers */
 void setup(Z, Z);
 int  solve(R, R, R, R, R, Z, Z);
-R    getdt(R, R, R);
+R    getdt(R, R);
 
 C *init(C *, const char *);
 C *load(C *, const char *);

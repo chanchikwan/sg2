@@ -8,9 +8,6 @@ int solve(R nu, R mu, R fi, R ki, R tt, Z i, Z n)
   const char rotor[] = "-/|\\";
   const R flop = 5 * N1 * N2 * (21.5 + (fi * ki > 0.0 ? 0 : 8) +
                                 12.5 * (log2((double)N1) + log2((double)N2)));
-
-  R Dt = getdt(1.0, nu, mu);
-
   cudaEvent_t t0, t1;
   cudaEventCreate(&t0);
   cudaEventCreate(&t1);
@@ -19,7 +16,7 @@ int solve(R nu, R mu, R fi, R ki, R tt, Z i, Z n)
 
   for(++i; i <= n; ++i) {
     float ms;
-    Z ns = (Z)ceil(tt / n / Dt), j;
+    Z ns = (Z)ceil(tt / n / getdt(nu, mu)), j;
     R dt =         tt / n / ns;
     printf("%4d: %5.2f -> %5.2f, dt ~ %.0e:       ",
            i, dt * ns * (i-1), dt * ns * i, dt);
@@ -42,7 +39,7 @@ int solve(R nu, R mu, R fi, R ki, R tt, Z i, Z n)
     if(Host[0].r == Host[0].r) /* spectrum is finite */
       dump(name(i), W);
     else if(exist(name(--i)) && load(W, name(i))) /* spectrum contains NAN */
-      Dt *= sqrt(0.5);
+      CFL *= sqrt(0.5);
     else {
       fflush(stdout);
       fprintf(stderr, "diverged, fail to resume from \"%s\", QUIT\n", name(i));

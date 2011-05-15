@@ -57,7 +57,6 @@ void dy_dd_dx(C *, C *, C *);
 R    *add_pro(R *, R *, R *);
 R    *sub_pro(R *, R *, R *);
 
-C *deriv(C *, C *, Z);
 R *force(R *, R, R, R);
 C *force(C *, R, R, R);
 C *scale(C *, R);

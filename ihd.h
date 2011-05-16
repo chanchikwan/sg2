@@ -39,7 +39,6 @@ void setprefix(const char *);
 int exist(const char *);
 int frame(const char *);
 const char *name(Z);
-R diag(void);
 
 /* Setup, helpers, and drivers */
 void setup(Z, Z);
@@ -51,9 +50,12 @@ C *load(C *, const char *);
 C *dump(const char *, C *);
 
 /* Computation kernels */
+void reduce (R *, R *, const R *, const R *);
 void getu   (C *, C *, const C *);
+
 void jacobi1(C *, C *, const C *);
 void jacobi2(C *, C *, const C *);
+
 R   *add_pro(R *, const R *, const R *);
 R   *sub_pro(R *, const R *, const R *);
 

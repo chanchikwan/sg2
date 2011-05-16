@@ -1,11 +1,16 @@
 #include <stdio.h>
+#include <math.h>
 #include "ihd.h"
 
 R getdt(R nu, R mu)
 {
-  const double n   = MIN(N1, N2);
-  const double adv = 10.0 / (diag() * n);
-  const double dff = 5.95 / (nu * n * n / 9.0 + mu);
+  const R n = MIN(N1, N2);
+  R uu, adv, dff;
 
+  getu(X, Y, W);
+  reduce(&uu, NULL, inverse((R *)X, X), inverse((R *)Y, Y));
+
+  adv = 10.0 / (sqrt(uu) * n);
+  dff = 5.95 / (nu * n * n / 9.0 + mu);
   return CFL * MIN(adv, dff);
 }

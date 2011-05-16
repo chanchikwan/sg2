@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include "ihd.h"
 
 #define TIDE 512
@@ -39,26 +38,15 @@ static __global__ void _reduce(C *Out, const R *x, const R *y,
   }
 }
 
-static FILE *file = NULL;
-
-static void close(void)
-{
-  if(file) fclose(file);
-}
-
-R diag(void)
+void reduce(R *m, R *s, const R *ux, const R *uy)
 {
   const Z bsz = TIDE;
   const Z gsz = (N2 - 1) / bsz + 1;
 
-  Z i;
   R max = 0.0, sum = 0.0;
+  Z i;
 
-  getu(X, Y, W);
-  inverse((R *)X, X);
-  inverse((R *)Y, Y);
-  _reduce<<<gsz, bsz>>>((C *)w, (R *)X, (R *)Y, N1, N2, F2);
-
+  _reduce<<<gsz, bsz>>>((C *)w, ux, uy, N1, N2, F2);
   cudaMemcpy(Host, w, sizeof(C) * gsz, cudaMemcpyDeviceToHost);
 
   for(i = 0; i < gsz; ++i) {
@@ -66,13 +54,6 @@ R diag(void)
     sum += Host[i].i;
   }
 
-  if(!file) {
-    atexit(close);
-    file = fopen("log", "w");
-  }
-
-  fprintf(file, "%g\n", 0.5 * sum / (N1 * N2));
-  fflush(file);
-
-  return sqrt(max);
+  if(m) *m = max;
+  if(s) *s = sum;
 }

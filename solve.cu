@@ -24,7 +24,7 @@ int solve(R nu, R mu, R fi, R ki, R dT, Z i, Z n)
 
     cudaEventRecord(t0, 0);
     while(time < next) {
-      R dt = getdt(nu, mu);
+      R dt = getdt(nu, mu, fi);
       printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b%5d ", ++m);
       if(time + dt < next)
         time += dt;

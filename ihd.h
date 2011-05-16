@@ -49,7 +49,7 @@ const char *name(Z);
 /* Setup, helpers, and drivers */
 void setup(Z, Z);
 int  solve(R, R, R, R, R, Z, Z);
-R    getdt(R, R);
+R    getdt(R, R, R);
 
 C *init(C *, const char *);
 C *load(C *, const char *);

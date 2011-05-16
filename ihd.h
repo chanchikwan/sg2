@@ -1,6 +1,12 @@
 #ifndef IHD_H
 #define IHD_H
 
+#ifdef RK4
+#define SUBS 5
+#else
+#define SUBS 3
+#endif
+
 #if defined(DOUBLE) || defined(OUBLE) /* So -DOUBLE works */
 #define K(X) (X)
 #else

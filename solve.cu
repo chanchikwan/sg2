@@ -6,8 +6,8 @@
 int solve(R nu, R mu, R fi, R ki, R tt, Z i, Z n)
 {
   const char rotor[] = "-/|\\";
-  const R flop = 5 * N1 * N2 * (21.5 + (fi * ki > 0.0 ? 0 : 8) +
-                                12.5 * (log2((double)N1) + log2((double)N2)));
+  const R flop = N1 * N2 * (21.5 + (fi * ki > 0.0 ? 0 : 8) +
+                            12.5 * (log2((double)N1) + log2((double)N2)));
   cudaEvent_t t0, t1;
   cudaEventCreate(&t0);
   cudaEventCreate(&t1);
@@ -33,7 +33,7 @@ int solve(R nu, R mu, R fi, R ki, R tt, Z i, Z n)
     cudaEventSynchronize(t1);
     cudaEventElapsedTime(&ms, t0, t1); ms /= ns;
     printf("\b\b\b\b\b\b%.3f ms/cycle ~ %.3f GFLOPS\n",
-           ms, 1e-6 * flop / ms);
+           ms, 1e-6 * SUBS * flop / ms);
 
     cudaMemcpy(Host, W, sizeof(R), cudaMemcpyDeviceToHost);
     if(Host[0].r == Host[0].r) /* spectrum is finite */

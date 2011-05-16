@@ -6,8 +6,9 @@
 int solve(R nu, R mu, R fi, R ki, R dT, Z i, Z n)
 {
   const char rotor[] = "-/|\\";
-  const R flop = N1 * N2 * (21.5 + (fi * ki > 0.0 ? 0 : 8) +
-                            12.5 * (log2((double)N1) + log2((double)N2)));
+  const R flop = N1 * N2 * SUBS * (fi * ki > 0.0 ? 0 : 8) +
+    N1 * N2 * SUBS * (21.5 + 12.5 * (log2((double)N1) + log2((double)N2))) +
+    N1 * N2 * (4.0 + 5.0 * (log2((double)N1) + log2((double)N2)));
   R time = dT * i;
   cudaEvent_t t0, t1;
   cudaEventCreate(&t0);
@@ -46,7 +47,7 @@ int solve(R nu, R mu, R fi, R ki, R dT, Z i, Z n)
     cudaEventSynchronize(t1);
     cudaEventElapsedTime(&ms, t0, t1); ms /= m;
     printf("\b\b\b\b\b\b\b\b\b\b\b\bstep%c %7.3f ms/cycle ~ %.3f GFLOPS\n",
-           m > 1 ? 's' : ' ', ms, 1e-6 * SUBS * flop / ms);
+           m > 1 ? 's' : ' ', ms, 1e-6 * flop / ms);
 
     dump(name(i), W);
   }

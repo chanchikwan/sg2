@@ -26,7 +26,6 @@ int main(int argc, char *argv[])
     /* Arguments start with '-' are options */
     else switch(argv[i][1]) {
       case 'r': if(HAS_ARG) {Seed= atoi(argv[++i]); break; }
-      case 'c': if(HAS_ARG) {CFL = atof(argv[++i]); break; }
       case 'd': if(HAS_ARG) { id = atoi(argv[++i]); break; }
       case 'n': if(HAS_ARG) { nu = atof(argv[++i]); break; }
       case 'm': if(HAS_ARG) { mu = atof(argv[++i]); break; }

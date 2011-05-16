@@ -24,7 +24,7 @@ typedef struct {R r, i;} C;
 extern Z N1, N2, H2, F2, Seed;
 extern uint3 Bsz, Gsz, Hsz;
 
-extern R *w, CFL;
+extern R *w;
 extern C *W, *X, *Y, *Host;
 
 /* FFT wrapper in fft.cu */

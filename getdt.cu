@@ -2,6 +2,10 @@
 #include <math.h>
 #include "ihd.h"
 
+#ifndef CFL
+#define CFL 0.707106781186547524 /* 1/sqrt(2) */
+#endif
+
 R getdt(R nu, R mu)
 {
   const R n = MIN(N1, N2);

@@ -7,7 +7,7 @@ pro flux, p, i, n=n, eps=eps, png=png
   if n_elements(f) eq 0 then begin ; load data
     d = load(name + '.raw', /nonl)
     T = real_part(conj(d.W) * d.J) ; the enstrophy transfer
-    if not keyword_set(n) then n = 127
+    if not keyword_set(n) then n = 88
     f = cache(name + '.fca', oned(-T, n))
   endif
 

@@ -6,7 +6,7 @@
 #endif
 
 #ifndef CFL
-#define CFL 0.707106781186547524 /* 1/sqrt(2) */
+#define CFL 0.5
 #endif
 
 #ifdef RK4

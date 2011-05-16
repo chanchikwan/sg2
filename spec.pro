@@ -7,7 +7,7 @@ pro spec, p, i, n=n, eps=eps, png=png
   if n_elements(s) eq 0 then begin ; load data
     W = load(name + '.raw')
     Z = 0.5 * abs(W)^2 ; the enstrophy
-    if not keyword_set(n) then n = 31
+    if not keyword_set(n) then n = 22
     s = cache(name + '.sca', oned(Z, n))
   endif
 
@@ -21,7 +21,7 @@ pro spec, p, i, n=n, eps=eps, png=png
   endif
 
   ; plot
-  plot, [1,max(s.b)], [1e-14,1e+2], /nodata, /xStyle, /yStyle, /xLog, /yLog, $
+  plot, [1,max(s.b)], [1e-12,1e+2], /nodata, /xStyle, /yStyle, /xLog, /yLog, $
         xTitle='Wavenumber k', title=name, $
         yTitle='Shell-integrated energy spectrum E(k)'
   

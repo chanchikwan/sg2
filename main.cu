@@ -8,11 +8,11 @@ int main(int argc, char *argv[])
 {
   const char *input = "zeros";
 
-  R nu = 1.0e-5, mu = 1.0e-2;
-  R fi = 5.0e-2, ki = 1.0e+2;
-  R tt = 1024.0;
+  R nu = 5.0e-3, mu = 0.0e+0;
+  R fi = 1.0e+0, ki = 1.0e+1;
+  R tt = 1000.0;
 
-  Z n0 = 1024, n1 = 1024, n2 = 1024;
+  Z n0 = 1000, n1 = 512, n2 = 512;
   Z id = 0, i;
 
   /* If "--help" is an argument, print usage and exit */

@@ -92,5 +92,5 @@ int main(int argc, char *argv[])
   }
 
   /* Really solve the problem */
-  return solve(nu, mu, fi, ki, tt, i, n0);
+  return solve(nu, mu, fi, ki, tt / n0, i, n0);
 }

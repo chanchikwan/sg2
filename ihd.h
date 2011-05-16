@@ -1,6 +1,14 @@
 #ifndef IHD_H
 #define IHD_H
 
+#ifndef DT_MIN
+#define DT_MIN 1.0e-8
+#endif
+
+#ifndef CFL
+#define CFL 0.707106781186547524 /* 1/sqrt(2) */
+#endif
+
 #ifdef RK4
 #define SUBS 5
 #else

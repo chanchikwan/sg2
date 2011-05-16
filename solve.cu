@@ -25,6 +25,11 @@ int solve(R nu, R mu, R fi, R ki, R dT, Z i, Z n)
     cudaEventRecord(t0, 0);
     while(time < next) {
       R dt = getdt(nu, mu, fi);
+      if(dt <= DT_MIN) {
+        fflush(stdout);
+        fprintf(stderr, "\ndiverged, QUIT\n");
+        exit(-1);
+      }
       printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b%5d ", ++m);
       if(time + dt < next)
         time += dt;
@@ -43,14 +48,7 @@ int solve(R nu, R mu, R fi, R ki, R dT, Z i, Z n)
     printf("\b\b\b\b\b\b\b\b\b\b\b\bstep%c %7.3f ms/cycle ~ %.3f GFLOPS\n",
            m > 1 ? 's' : ' ', ms, 1e-6 * SUBS * flop / ms);
 
-    cudaMemcpy(Host, W, sizeof(R), cudaMemcpyDeviceToHost);
-    if(Host[0].r == Host[0].r) /* spectrum is finite */
-      dump(name(i), W);
-    else { /* spectrum contains NAN */
-      fflush(stdout);
-      fprintf(stderr, "diverged, QUIT\n");
-      exit(-1);
-    }
+    dump(name(i), W);
   }
 
   printf("======================= Done  Simulation =======================\n");

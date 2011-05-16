@@ -2,14 +2,13 @@
 #include <math.h>
 #include "ihd.h"
 
-#ifndef CFL
-#define CFL 0.707106781186547524 /* 1/sqrt(2) */
-#endif
-
 R getdt(R nu, R mu, R fi)
 {
   const R n = MIN(N1, N2);
   R uu, adv, dff, frc;
+
+  cudaMemcpy(Host, W, sizeof(R), cudaMemcpyDeviceToHost);
+  if(Host[0].r != Host[0].r) return 0.0; /* spectrum contains NAN */
 
   getu(X, Y, W);
   reduce(&uu, NULL, inverse((R *)X, X), inverse((R *)Y, Y));

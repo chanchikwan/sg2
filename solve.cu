@@ -38,11 +38,9 @@ int solve(R nu, R mu, R fi, R ki, R tt, Z i, Z n)
     cudaMemcpy(Host, W, sizeof(R), cudaMemcpyDeviceToHost);
     if(Host[0].r == Host[0].r) /* spectrum is finite */
       dump(name(i), W);
-    else if(exist(name(--i)) && load(W, name(i))) /* spectrum contains NAN */
-      CFL *= sqrt(0.5);
-    else {
+    else { /* spectrum contains NAN */
       fflush(stdout);
-      fprintf(stderr, "diverged, fail to resume from \"%s\", QUIT\n", name(i));
+      fprintf(stderr, "diverged, QUIT\n");
       exit(-1);
     }
   }

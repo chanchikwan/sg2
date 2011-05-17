@@ -1,4 +1,4 @@
-ihd is a simple 2D spectral hydrodynamic code written in CUDA C
+Sg2 is a simple 2D spectral hydrodynamic code written in CUDA C
 
 CONVENTIONS: let u be the two dimensional velocity.  We define the
   stream function f such that

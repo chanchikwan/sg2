@@ -1,12 +1,30 @@
+/* Copyright (C) 2010-2011 Chi-kwan Chan
+   Copyright (C) 2010-2011 NORDITA
+
+   This file is part of sg2.
+
+   Sg2 is free software: you can redistribute it and/or modify it
+   under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   Sg2 is distributed in the hope that it will be useful, but WITHOUT
+   ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+   or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+   License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with sg2. If not, see <http://www.gnu.org/licenses/>. */
+
 #include <stdlib.h>
-#include "ihd.h"
+#include "sg2.h"
 
 #define TIDE 32
 
-Z N1, N2, H2, F2, Seed = 1;
+Z N1, N2, H2, F2;
 uint3 Bsz, Gsz, Hsz;
 
-R *w, CFL = 0.8;
+R *w, Flop;
 C *W, *X, *Y, *Host;
 
 static void done(void)

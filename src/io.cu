@@ -1,10 +1,28 @@
+/* Copyright (C) 2010-2011 Chi-kwan Chan
+   Copyright (C) 2010-2011 NORDITA
+
+   This file is part of sg2.
+
+   Sg2 is free software: you can redistribute it and/or modify it
+   under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   Sg2 is distributed in the hope that it will be useful, but WITHOUT
+   ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+   or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+   License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with sg2. If not, see <http://www.gnu.org/licenses/>. */
+
 #include <stdlib.h>
 #include <stdio.h>
-#include "ihd.h"
+#include "sg2.h"
 
 C *load(C *F, const char *name)
 {
-  const Z k  = (MIN(N1, N2) - 1) / 3;
+  const Z k = (MIN(N1, N2) - 1) / 3;
   Z i, j, size[4];
 
   FILE *file = fopen(name, "rb");
@@ -33,7 +51,7 @@ C *load(C *F, const char *name)
     }
 
     cudaMemcpy(F, Host, sizeof(C) * N1 * H2, cudaMemcpyHostToDevice);
-    Seed = size[3];
+    setseed(size[3]);
     return F;
   } else {
     fclose(file);
@@ -46,7 +64,7 @@ C *dump(const char *name, C *F)
   const Z k  = (MIN(N1, N2) - 1) / 3;
   const Z n1 = 1 + k * 2;
   const Z h2 = 1 + k;
-  Z i, j, size[4] = {-(Z)sizeof(C), n1, h2, Seed};
+  Z i, j, size[4] = {-(Z)sizeof(C), n1, h2, getseed()};
 
   FILE *file = fopen(name, "wb");
   fwrite(size, sizeof(Z), 4, file);
@@ -63,8 +81,8 @@ C *dump(const char *name, C *F)
 
   /* Compute the non-linear term */
   scale(w, 0.0);
-  dx_dd_dy(X, Y, W); add_pro(w, inverse((R *)X, X), inverse((R *)Y, Y));
-  dy_dd_dx(Y, X, W); sub_pro(w, inverse((R *)Y, Y), inverse((R *)X, X));
+  jacobi1(X, Y, W); add_pro(w, inverse((R *)X, X), inverse((R *)Y, Y));
+  jacobi2(X, Y, W); sub_pro(w, inverse((R *)X, X), inverse((R *)Y, Y));
   scale(forward(X, w), 1.0 / (N1 * N2));
 
   /* Write the Fourier space non-linear term */

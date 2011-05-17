@@ -18,7 +18,7 @@ Spectral Galerkin Incompressible Hydrodynamic in 2D (with CUDA)\n\
   -o                prefix of the outputs\n\
   -r                random number seed\n\
   -s                number of frames and grids\n\
-  -t                total time\n\
+  -t                [Courant number and] total time [and fixed step size]\n\
 \n\
 Report bugs to <ckch@nordita.org>.\n");
 

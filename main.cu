@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
 
   R nu = 5.0e-3, mu = 0.0e+0;
   R fi = 1.0e+0, ki = 1.0e+1;
-  R tt = 1000.0;
+  R tt = 1000.0, dt = 0.0e+0;
 
   Z n0 = 1000, n1 = 512, n2 = 512;
   Z id = 0, i;
@@ -34,7 +34,8 @@ int main(int argc, char *argv[])
       PARA('m') mu = atof(argv[++i]); break;
       PARA('f') ki = atof(argv[++i]); BREAK;
       fi = ki;  ki = atof(argv[++i]); break;
-      PARA('t') tt = atof(argv[++i]); break;
+      PARA('t') tt = atof(argv[++i]); BREAK;
+                dt = atof(argv[++i]); break;
       PARA('s') n0 = atoi(argv[++i]); BREAK;
            n2 = n1 = atoi(argv[++i]); BREAK;
                 n2 = atoi(argv[++i]); break;
@@ -68,6 +69,23 @@ int main(int argc, char *argv[])
   printf("  Time        :\t tt = %g,\tnt = %d\n", tt, n0);
   printf("  Resolution  :\t n1 = %d,\tn2 = %d\n", n1, n2);
   setup(n1, n2);
+
+#ifdef RK4
+  printf("  Integrator  :\t\"RK4\"");
+#else
+  printf("  Integrator  :\t\"RK3\"");
+#endif
+  if(tt < dt) { /* need to reinterpret inputs */
+    R cfl = tt;
+    tt = dt; dt = 0.0;
+    printf(" with adaptive time step, CFL = %g\n", cfl);
+    setdt(cfl, DT_MIN); /* TODO: choose minimum dt at runtime */
+  } else if(dt == 0.0) {
+    printf(" with adaptive time step, CFL = %g\n", CFL);
+  } else {
+    printf(" with fixed time step %g\n", dt);
+    setdt(0.0, dt);
+  }
 
   /* Load input file */
   if(exist(input)) {

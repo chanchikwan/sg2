@@ -1,13 +1,8 @@
 #ifndef IHD_H
 #define IHD_H
 
-#ifndef DT_MIN
+#define CFL    0.5
 #define DT_MIN 1.0e-8
-#endif
-
-#ifndef CFL
-#define CFL 0.5
-#endif
 
 #ifdef RK4
 #define SUBS 5
@@ -57,6 +52,7 @@ const char *name(Z);
 /* Setup, helpers, and drivers */
 void setup(Z, Z);
 int  solve(R, R, R, R, R, Z, Z);
+void setdt(R, R);
 R    getdt(R, R, R);
 
 C *init(C *, const char *);

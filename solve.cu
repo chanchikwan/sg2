@@ -26,7 +26,7 @@ int solve(R nu, R mu, R fi, R ki, R dT, Z i, Z n)
     cudaEventRecord(t0, 0);
     while(time < next) {
       R dt = getdt(nu, mu, fi);
-      if(dt <= DT_MIN) {
+      if(dt == 0.0) {
         fflush(stdout);
         fprintf(stderr, "\ndiverged, QUIT\n");
         exit(-1);

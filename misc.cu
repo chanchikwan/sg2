@@ -29,6 +29,20 @@ int exist(const char *name)
   return 0;
 }
 
+int seed(const char *s)
+{
+  FILE *f = fopen(s, "r");
+  if(!f) {
+    char c;
+    while((int)(c = *s++))
+      if(c < '0' || '9' < c)
+        return 0;
+    return 1;
+  }
+  fclose(f);
+  return 0;
+}
+
 int frame(const char *h)
 {
   char c;

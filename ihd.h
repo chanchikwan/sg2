@@ -46,6 +46,7 @@ R   *inverse(R *, C *);
 void usage(int);
 void setprefix(const char *);
 int exist(const char *);
+int seed (const char *);
 int frame(const char *);
 const char *name(Z);
 

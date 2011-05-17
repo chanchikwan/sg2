@@ -7,7 +7,7 @@ void usage(int status)
   if(status)
     fprintf(stderr, "Try `ihd --help' for more information.\n");
   else
-    fprintf(stdout, "Usage: ihd [OPTION...] [INPUT_FILE]\n\
+    fprintf(stdout, "Usage: ihd [OPTION...] [SEED/INPUT_FILE]\n\
 Spectral Galerkin Incompressible Hydrodynamic in 2D (with CUDA)\n\
 \n\
       --help        display this help and exit\n\
@@ -16,7 +16,6 @@ Spectral Galerkin Incompressible Hydrodynamic in 2D (with CUDA)\n\
   -m                Ekman coefficient\n\
   -n                kinematic viscosity\n\
   -o                prefix of the outputs\n\
-  -r                random number seed\n\
   -s                number of frames and grids\n\
   -t                [Courant number and] total time [and fixed step size]\n\
 \n\

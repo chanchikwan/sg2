@@ -24,11 +24,13 @@ int main(int argc, char *argv[])
 
   /* Home made argument parser */
   for(i = 1; i < argc; ++i) {
-    /* Arguments do not start with '-' are input file names */
-    if(argv[i][0] != '-') input = argv[i];
+    /* Arguments do not start with '-' are random seed or input file names */
+    if(argv[i][0] != '-') {
+      if(seed(argv[i])) Seed = atoi(argv[i]);
+      else input = argv[i];
+    }
     /* Arguments start with '-' are options */
     else switch(argv[i][1]) {
-      PARA('r')Seed= atoi(argv[++i]); break;
       PARA('d') id = atoi(argv[++i]); break;
       PARA('n') nu = atof(argv[++i]); break;
       PARA('m') mu = atof(argv[++i]); break;

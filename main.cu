@@ -32,11 +32,11 @@ int main(int argc, char *argv[])
       PARA('d') id = atoi(argv[++i]); break;
       PARA('n') nu = atof(argv[++i]); break;
       PARA('m') mu = atof(argv[++i]); break;
-      PARA('f') fi = atof(argv[++i]); break;
-      PARA('k') ki = atof(argv[++i]); break;
+      PARA('f') ki = atof(argv[++i]); BREAK;
+      fi = ki;  ki = atof(argv[++i]); break;
       PARA('t') tt = atof(argv[++i]); break;
       PARA('s') n0 = atoi(argv[++i]); BREAK;
-                n1 = atoi(argv[++i]); BREAK;
+           n2 = n1 = atoi(argv[++i]); BREAK;
                 n2 = atoi(argv[++i]); break;
       PARA('o') setprefix(argv[++i]); break;
       default : ignore : printf("Ignore parameter \"%s\"\n", argv[i]);

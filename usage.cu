@@ -12,8 +12,7 @@ Spectral Galerkin Incompressible Hydrodynamic in 2D (with CUDA)\n\
 \n\
       --help        display this help and exit\n\
   -d                device id\n\
-  -f                forcing amplitude\n\
-  -k                forcing wavenumber\n\
+  -f                forcing [amplitude and] wavenumber\n\
   -m                Ekman coefficient\n\
   -n                kinematic viscosity\n\
   -o                prefix of the outputs\n\

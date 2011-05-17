@@ -4,12 +4,6 @@
 #define CFL    0.5
 #define DT_MIN 1.0e-8
 
-#ifdef RK4
-#define SUBS 5
-#else
-#define SUBS 3
-#endif
-
 #if defined(DOUBLE) || defined(OUBLE) /* So -DOUBLE works */
 #define K(X) (X)
 #else
@@ -33,8 +27,10 @@ typedef struct {R r, i;} C;
 extern Z N1, N2, H2, F2, Seed;
 extern uint3 Bsz, Gsz, Hsz;
 
-extern R *w;
+extern R *w, Flop;
 extern C *W, *X, *Y, *Host;
+
+extern void (*Step)(R, R, R, R, R);
 
 /* FFT wrapper in fft.cu */
 void mkplans(Z, Z);
@@ -55,12 +51,14 @@ void setup(Z, Z);
 int  solve(R, R, R, R, R, Z, Z);
 void setdt(R, R);
 R    getdt(R, R, R);
+void setrk(const char *, Z);
 
 C *init(C *, const char *);
 C *load(C *, const char *);
 C *dump(const char *, C *);
 
 /* Computation kernels */
+void lsRKCNn(const Z, const R *, const R *, const R *, R, R, R, R, R);
 void reduce (R *, R *, const R *, const R *);
 void getu   (C *, C *, const C *);
 
@@ -74,7 +72,5 @@ R *force(R *, R, R, R);
 C *force(C *, R, R, R);
 C *scale(C *, R);
 R *scale(R *, R);
-
-void step(R, R, R, R, R);
 
 #endif

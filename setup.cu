@@ -6,8 +6,10 @@
 Z N1, N2, H2, F2, Seed = 1;
 uint3 Bsz, Gsz, Hsz;
 
-R *w;
+R *w, Flop;
 C *W, *X, *Y, *Host;
+
+void (*Step)(R, R, R, R, R);
 
 static void done(void)
 {

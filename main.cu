@@ -10,6 +10,7 @@
 int main(int argc, char *argv[])
 {
   const char *input = "zeros";
+  const char *rk    = "rk3";
 
   R nu = 5.0e-3, mu = 0.0e+0;
   R fi = 1.0e+0, ki = 1.0e+1;
@@ -36,6 +37,7 @@ int main(int argc, char *argv[])
       PARA('m') mu = atof(argv[++i]); break;
       PARA('f') ki = atof(argv[++i]); BREAK;
       fi = ki;  ki = atof(argv[++i]); break;
+      FLAG('r') rk =      argv[i]+1 ; break;
       PARA('t') tt = atof(argv[++i]); BREAK;
                 dt = atof(argv[++i]); break;
       PARA('s') n0 = atoi(argv[++i]); BREAK;
@@ -72,11 +74,9 @@ int main(int argc, char *argv[])
   printf("  Resolution  :\t n1 = %d,\tn2 = %d\n", n1, n2);
   setup(n1, n2);
 
-#ifdef RK4
-  printf("  Integrator  :\t\"RK4\"");
-#else
-  printf("  Integrator  :\t\"RK3\"");
-#endif
+  printf("  Integrator  :\t\"%s\"", rk);
+  setrk(rk, fi * ki < 0.0);
+
   if(tt < dt) { /* need to reinterpret inputs */
     R cfl = tt;
     tt = dt; dt = 0.0;

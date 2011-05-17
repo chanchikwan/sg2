@@ -1,7 +1,7 @@
-#include "ihd.h"
+#include "sg2.h"
 
-#define KERN(name, op)                                  \
-  static __global__ void name(C *X, C *Y, const C *W,   \
+#define KERN(NAME, OP)                                  \
+  static __global__ void NAME(C *X, C *Y, const C *W,   \
                               const Z N1, const Z H2)   \
   {                                                     \
     const Z i = blockDim.y * blockIdx.y + threadIdx.y;  \
@@ -14,7 +14,7 @@
       R ky = j;                                         \
       if(h) {                                           \
         const R ikk = K(1.0) / (kx * kx + ky * ky);     \
-        op;                                             \
+        OP;                                             \
       }                                                 \
                                                         \
       X[h].r = - kx * Wh.i;                             \

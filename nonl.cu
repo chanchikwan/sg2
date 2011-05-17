@@ -1,7 +1,7 @@
-#include "ihd.h"
+#include "sg2.h"
 
-#define KERN(name, op)                                          \
-  static __global__ void name(R *f, const R *x, const R *y,     \
+#define KERN(NAME, OP)                                          \
+  static __global__ void NAME(R *f, const R *x, const R *y,     \
                         const Z N1, const Z N2, const Z F2)     \
   {                                                             \
     const Z i = blockDim.y * blockIdx.y + threadIdx.y;          \
@@ -9,7 +9,7 @@
     const Z h = i * N2 + j;                                     \
     const Z H = i * F2 + j;                                     \
                                                                 \
-    if(i < N1 && j < N2) f[h] op x[H] * y[H];                   \
+    if(i < N1 && j < N2) f[h] OP x[H] * y[H];                   \
   }
 
 /* Adding the 1st term in the Jacobian */

@@ -1,4 +1,4 @@
-#include "ihd.h"
+#include "sg2.h"
 
 #define TIDE 512
 

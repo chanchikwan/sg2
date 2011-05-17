@@ -1,15 +1,13 @@
 #include <stdlib.h>
-#include "ihd.h"
+#include "sg2.h"
 
 #define TIDE 32
 
-Z N1, N2, H2, F2, Seed = 1;
+Z N1, N2, H2, F2;
 uint3 Bsz, Gsz, Hsz;
 
 R *w, Flop;
 C *W, *X, *Y, *Host;
-
-void (*Step)(R, R, R, R, R);
 
 static void done(void)
 {

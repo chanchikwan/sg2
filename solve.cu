@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <math.h>
-#include "ihd.h"
+#include "sg2.h"
 
 int solve(R nu, R mu, R fi, R ki, R dT, Z i, Z n)
 {
@@ -20,16 +19,11 @@ int solve(R nu, R mu, R fi, R ki, R dT, Z i, Z n)
     Z m = 0;
     float ms;
     printf("%4d: %5.2f -> %5.2f:                  ", i, time, next);
-    srand(Seed);
 
     cudaEventRecord(t0, 0);
     while(time < next) {
       R dt = getdt(nu, mu, fi);
-      if(dt == 0.0) {
-        fflush(stdout);
-        fprintf(stderr, "\ndiverged, QUIT\n");
-        exit(-1);
-      }
+      if(dt == 0.0) error(" diverged, QUIT\n");
       printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b%5d ", ++m);
       if(time + dt < next)
         time += dt;
@@ -39,14 +33,14 @@ int solve(R nu, R mu, R fi, R ki, R dT, Z i, Z n)
       }
       printf("%c dt ~ %5.0e", rotor[m%4], dt);
       fflush(stdout);
-      Step(nu, mu, fi, ki, dt);
+      step(nu, mu, fi, ki, dt);
     }
     cudaEventRecord(t1, 0);
 
     cudaEventSynchronize(t1);
     cudaEventElapsedTime(&ms, t0, t1); ms /= m;
     printf("\b\b\b\b\b\b\b\b\b\b\b\bstep%c %7.3f ms/cycle ~ %.3f GFLOPS\n",
-           m > 1 ? 's' : ' ', ms, 1e-6 * Flop / ms);
+           m > 1 ? 's' : ' ', ms, 1e-6 * flop() / ms);
 
     dump(name(i), W);
   }

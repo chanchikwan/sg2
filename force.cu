@@ -1,5 +1,6 @@
 #include <stdlib.h>
-#include "ihd.h"
+#include <math.h>
+#include "sg2.h"
 
 /* We turn on Kolmogorov forcing when fi * ki < 0.  Therefore, there
    is an extra minus sign in line 19 although we are using
@@ -72,8 +73,8 @@ C *force(C *F, R dt, R fi, R ki)
 {
   const R fs = fi * ki * sqrt(dt); /* no factor of 2 because of FFT */
   const R dp = TWO_PI / (RAND_MAX + 1.0);
-  const R pm = dp * (Seed = rand());
-  const R pk = dp * (Seed = rand());
+  const R pm = dp * rand();
+  const R pk = dp * rand();
 
   const R fx = fs * cos(pm);
   const R fy = fs * sin(pm);

@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "ihd.h"
+#include "sg2.h"
 
 void usage(int status)
 {
@@ -16,6 +16,7 @@ Spectral Galerkin Incompressible Hydrodynamic in 2D (with CUDA)\n\
   -m                Ekman coefficient\n\
   -n                kinematic viscosity\n\
   -o                prefix of the outputs\n\
+  -rk3, -rk4        pick different time integrators\n\
   -s                number of frames and grids\n\
   -t                [Courant number and] total time [and fixed step size]\n\
 \n\

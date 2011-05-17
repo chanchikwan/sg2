@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include "ihd.h"
+#include "sg2.h"
 
 #define SIZE 256
 
@@ -12,7 +12,7 @@ void setprefix(const char *p)
   prefix[SIZE - 1] = '\0';
 }
 
-int exist(const char *name)
+int valid(const char *name)
 {
   const Z k  = (MIN(N1, N2) - 1) / 3;
 
@@ -26,20 +26,6 @@ int exist(const char *name)
      size[2] <= 1 + k         )
       return 1;
   }
-  return 0;
-}
-
-int seed(const char *s)
-{
-  FILE *f = fopen(s, "r");
-  if(!f) {
-    char c;
-    while((int)(c = *s++))
-      if(c < '0' || '9' < c)
-        return 0;
-    return 1;
-  }
-  fclose(f);
   return 0;
 }
 

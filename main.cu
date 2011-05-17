@@ -1,11 +1,12 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "ihd.h"
+#include <string.h>
+#include "sg2.h"
 
 #define NOVAL (i+1 == argc) || (argv[i+1][0] == '-')
 #define BREAK if(NOVAL) break
-#define FLAG(x) case x:
-#define PARA(x) case x: if(NOVAL) goto ignore; /* real programmers can write
+#define FLAG(X) case X:
+#define PARA(X) case X: if(NOVAL) goto ignore; /* real programmers can write
                                                   FORTRAN in any language */
 int main(int argc, char *argv[])
 {
@@ -27,8 +28,7 @@ int main(int argc, char *argv[])
   for(i = 1; i < argc; ++i) {
     /* Arguments do not start with '-' are random seed or input file names */
     if(argv[i][0] != '-') {
-      if(seed(argv[i])) Seed = atoi(argv[i]);
-      else input = argv[i];
+      if(setseed(argv[i]) < 0) input = argv[i];
     }
     /* Arguments start with '-' are options */
     else switch(argv[i][1]) {
@@ -58,24 +58,12 @@ int main(int argc, char *argv[])
        cudaSuccess == cudaSetDevice(id))
       printf("\b\"%s\" with %g MiB of memory\n",
              prop.name, prop.totalGlobalMem / 1024.0 / 1024.0);
-    else {
-      fprintf(stderr, "fail to access device, QUIT\n");
-      exit(-1);
-    }
-  } else {
-    fprintf(stderr, "device id is too large, QUIT\n");
-    exit(-1);
-  }
+    else error("fail to access device, QUIT\n");
+  } else error("device id is too large, QUIT\n");
 
   /* Print simulation setup */
-  printf("  Dissipation :\t nu = %g,\tmu = %g\n", nu, mu);
-  printf("  Forcing     :\t fi = %g,\tki = %g\n", fi, ki);
-  printf("  Time        :\t tt = %g,\tnt = %d\n", tt, n0);
-  printf("  Resolution  :\t n1 = %d,\tn2 = %d\n", n1, n2);
-  setup(n1, n2);
-
   printf("  Integrator  :\t\"%s\"", rk);
-  setrk(rk, fi * ki < 0.0);
+  setrk(rk);
 
   if(tt < dt) { /* need to reinterpret inputs */
     R cfl = tt;
@@ -89,17 +77,20 @@ int main(int argc, char *argv[])
     setdt(0.0, dt);
   }
 
+  printf("  Dissipation :\t nu = %g,\tmu = %g\n", nu, mu);
+  printf("  Forcing     :\t fi = %g,\tki = %g\n", fi, ki);
+  printf("  Time        :\t tt = %g,\tnt = %d\n", tt, n0);
+  printf("  Resolution  :\t n1 = %d,\tn2 = %d\n", n1, n2);
+  setup(n1, n2);
+
   /* Load input file */
-  if(exist(input)) {
+  if(valid(input)) {
     printf("  Input file  :\t ");
     if(load(W, input)) {
       i = frame(input);
       printf("loaded \"%s\"\n", input);
-    } else {
-      fflush(stdout);
-      fprintf(stderr, "invalid input file \"%s\", QUIT\n", input);
-      exit(-1);
-    }
+    } else
+      error("invalid input file \"%s\", QUIT\n", input);
   }
   /* Initialize the fields */
   else {
@@ -107,11 +98,8 @@ int main(int argc, char *argv[])
     if(init(W, input)) {
       dump(name(i = 0), W);
       printf("\b\"%s\"\n", input);
-    } else {
-      fflush(stdout);
-      fprintf(stderr, "invalid initial condition \"%s\", QUIT\n", input);
-      exit(-1);
-    }
+    } else
+      error("invalid initial condition \"%s\", QUIT\n", input);
   }
 
   /* Really solve the problem */

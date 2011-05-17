@@ -1,6 +1,6 @@
-#include "ihd.h"
+#include "sg2.h"
 
-#define ZERO(T, op)                                             \
+#define ZERO(T, OP)                                             \
   static __global__ void _zero(T *f, const Z N1, const Z H2)    \
   {                                                             \
     const Z i = blockDim.y * blockIdx.y + threadIdx.y;          \
@@ -8,11 +8,11 @@
     const Z h = i * H2 + j;                                     \
                                                                 \
     if(i < N1 && j < H2) {                                      \
-      op;                                                       \
+      OP;                                                       \
     }                                                           \
   }
 
-#define SCAL(T, op)                                                     \
+#define SCAL(T, OP)                                                     \
   static __global__ void _scal(T *f, const R s, const Z N1, const Z H2) \
   {                                                                     \
     const Z i = blockDim.y * blockIdx.y + threadIdx.y;                  \
@@ -20,7 +20,7 @@
     const Z h = i * H2 + j;                                             \
                                                                         \
     if(i < N1 && j < H2) {                                              \
-      op;                                                               \
+      OP;                                                               \
     }                                                                   \
   }
 

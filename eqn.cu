@@ -1,4 +1,4 @@
-#include "ihd.h"
+#include "sg2.h"
 
 static __global__ void _evol_diff(C *W, const C *F, const R KK,
                                         const R nu, const R mu,
@@ -41,10 +41,10 @@ void lsRKCNn(const Z n, const R *alpha, const R *beta, const R *gamma,
     const R im = dt * 0.5 * (alpha[i+1] - alpha[i]);
     const R ex = dt * gamma[i] / (N1 * N2);
 
-    if(fi * ki > 0.0)
-      scale(w, beta[i]);
-    else
+    if(fi * ki < 0.0)
       force(w, beta[i], fi, ki); /* scaling and Kolmogorov forcing */
+    else
+      scale(w, beta[i]);
 
     jacobi1(X, Y, W); add_pro(w, inverse((R *)X, X), inverse((R *)Y, Y));
     jacobi2(X, Y, W); sub_pro(w, inverse((R *)X, X), inverse((R *)Y, Y));

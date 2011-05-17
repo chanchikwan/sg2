@@ -1,6 +1,5 @@
-#include <stdio.h>
 #include <math.h>
-#include "ihd.h"
+#include "sg2.h"
 
 /* If cfl == 0.0, fix is the fixed step */
 static R cfl = CFL;

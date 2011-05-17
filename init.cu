@@ -1,7 +1,7 @@
 #include <stdlib.h>
-#include <stdio.h>
+#include <string.h>
 #include <math.h>
-#include "ihd.h"
+#include "sg2.h"
 
 static R zeros(R x, R y)
 {
@@ -10,7 +10,7 @@ static R zeros(R x, R y)
 
 static R noise(R x, R y)
 {
-  return 0.5 - (R)(Seed = rand()) / (RAND_MAX + 1.0);
+  return 0.5 - (R)rand() / (RAND_MAX + 1.0);
 }
 
 static R decay(R x, R y)

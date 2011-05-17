@@ -1,10 +1,10 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "ihd.h"
+#include "sg2.h"
 
 C *load(C *F, const char *name)
 {
-  const Z k  = (MIN(N1, N2) - 1) / 3;
+  const Z k = (MIN(N1, N2) - 1) / 3;
   Z i, j, size[4];
 
   FILE *file = fopen(name, "rb");
@@ -33,7 +33,7 @@ C *load(C *F, const char *name)
     }
 
     cudaMemcpy(F, Host, sizeof(C) * N1 * H2, cudaMemcpyHostToDevice);
-    Seed = size[3];
+    setseed(size[3]);
     return F;
   } else {
     fclose(file);
@@ -46,7 +46,7 @@ C *dump(const char *name, C *F)
   const Z k  = (MIN(N1, N2) - 1) / 3;
   const Z n1 = 1 + k * 2;
   const Z h2 = 1 + k;
-  Z i, j, size[4] = {-(Z)sizeof(C), n1, h2, Seed};
+  Z i, j, size[4] = {-(Z)sizeof(C), n1, h2, getseed()};
 
   FILE *file = fopen(name, "wb");
   fwrite(size, sizeof(Z), 4, file);

@@ -2,8 +2,11 @@
 #include <stdio.h>
 #include "ihd.h"
 
-#define HAS_ARG (i+1 < argc && argv[i+1][0] != '-')
-
+#define NOVAL (i+1 == argc) || (argv[i+1][0] == '-')
+#define BREAK if(NOVAL) break
+#define FLAG(x) case x:
+#define PARA(x) case x: if(NOVAL) goto ignore; /* real programmers can write
+                                                  FORTRAN in any language */
 int main(int argc, char *argv[])
 {
   const char *input = "zeros";
@@ -25,30 +28,30 @@ int main(int argc, char *argv[])
     if(argv[i][0] != '-') input = argv[i];
     /* Arguments start with '-' are options */
     else switch(argv[i][1]) {
-      case 'r': if(HAS_ARG) {Seed= atoi(argv[++i]); break; }
-      case 'd': if(HAS_ARG) { id = atoi(argv[++i]); break; }
-      case 'n': if(HAS_ARG) { nu = atof(argv[++i]); break; }
-      case 'm': if(HAS_ARG) { mu = atof(argv[++i]); break; }
-      case 'f': if(HAS_ARG) { fi = atof(argv[++i]); break; }
-      case 'k': if(HAS_ARG) { ki = atof(argv[++i]); break; }
-      case 't': if(HAS_ARG) { tt = atof(argv[++i]); break; }
-      case 's': if(HAS_ARG) { n0 = atoi(argv[++i]);
-                if(HAS_ARG)   n1 = atoi(argv[++i]);
-                if(HAS_ARG)   n2 = atoi(argv[++i]); break; }
-      case 'o': if(HAS_ARG) { setprefix(argv[++i]); break; }
-      default : printf("Ignore \"%s\"\n", argv[i]);
+      PARA('r')Seed= atoi(argv[++i]); break;
+      PARA('d') id = atoi(argv[++i]); break;
+      PARA('n') nu = atof(argv[++i]); break;
+      PARA('m') mu = atof(argv[++i]); break;
+      PARA('f') fi = atof(argv[++i]); break;
+      PARA('k') ki = atof(argv[++i]); break;
+      PARA('t') tt = atof(argv[++i]); break;
+      PARA('s') n0 = atoi(argv[++i]); BREAK;
+                n1 = atoi(argv[++i]); BREAK;
+                n2 = atoi(argv[++i]); break;
+      PARA('o') setprefix(argv[++i]); break;
+      default : ignore : printf("Ignore parameter \"%s\"\n", argv[i]);
     }
   }
 
   /* Pick a device */
   cudaGetDeviceCount(&i);
-  printf("Device %d/%d  :\t", id, i);
+  printf("  Device %d/%d  :\t ", id, i);
   fflush(stdout);
   if(id < i) {
     cudaDeviceProp prop;
     if(cudaSuccess == cudaGetDeviceProperties(&prop, id) &&
        cudaSuccess == cudaSetDevice(id))
-      printf("\"%s\" with %g MiB of memory\n",
+      printf("\b\"%s\" with %g MiB of memory\n",
              prop.name, prop.totalGlobalMem / 1024.0 / 1024.0);
     else {
       fprintf(stderr, "fail to access device, QUIT\n");
@@ -60,15 +63,15 @@ int main(int argc, char *argv[])
   }
 
   /* Print simulation setup */
-  printf("Dissipation :\tnu = %g,\tmu = %g\n", nu, mu);
-  printf("Forcing     :\tfi = %g,\tki = %g\n", fi, ki);
-  printf("Time        :\ttt = %g,\tnt = %d\n", tt, n0);
-  printf("Resolution  :\tn1 = %d,\tn2 = %d\n", n1, n2);
+  printf("  Dissipation :\t nu = %g,\tmu = %g\n", nu, mu);
+  printf("  Forcing     :\t fi = %g,\tki = %g\n", fi, ki);
+  printf("  Time        :\t tt = %g,\tnt = %d\n", tt, n0);
+  printf("  Resolution  :\t n1 = %d,\tn2 = %d\n", n1, n2);
   setup(n1, n2);
 
   /* Load input file */
   if(exist(input)) {
-    printf("Input file  :\t");
+    printf("  Input file  :\t ");
     if(load(W, input)) {
       i = frame(input);
       printf("loaded \"%s\"\n", input);
@@ -80,10 +83,10 @@ int main(int argc, char *argv[])
   }
   /* Initialize the fields */
   else {
-    printf("Initialize  :\t");
+    printf("  Initialize  :\t ");
     if(init(W, input)) {
       dump(name(i = 0), W);
-      printf("\"%s\"\n", input);
+      printf("\b\"%s\"\n", input);
     } else {
       fflush(stdout);
       fprintf(stderr, "invalid initial condition \"%s\", QUIT\n", input);

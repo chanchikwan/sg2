@@ -17,17 +17,38 @@
 ;; along with sg2. If not, see <http://www.gnu.org/licenses/>.
 
 pro plog, n, Z=Z
-  
-  E = dblarr(n + 1)
 
-  for i = 0, n do begin
+  if n_elements(n) eq 0 then begin
 
-    c = cache(string(i, format='(i04)') + '.sca')
-    if keyword_set(Z) then E[i] = total(c.Z) $
-    else                   E[i] = total(c.E)
-     
-  endfor
+    spawn, 'wc -l log.txt', wc
+    n = long(wc[0])
 
-  plot, E
+    data = dblarr(5, n)
+    openr, lun, 'log.txt', /get_lun
+    readf, lun, data
+    close, lun & free_lun, lun
+    data = transpose(data)
+
+    E = data[*,0]
+    y = atan(data[*,2], data[*,1])
+    x = atan(data[*,4], data[*,3])
+
+    window, 0, xSize=512, ySize=512
+    plot, E
+
+    window, 1, xSize=512, ySize=512
+    plot, x, y, psym=3, /xStyle, /yStyle, xRange=!pi*[-1,1], yRange=!pi*[-1,1]
+
+  endif else begin
+
+    E = dblarr(n + 1)
+    for i = 0, n do begin
+      c = cache(string(i, format='(i04)') + '.sca')
+      if keyword_set(Z) then E[i] = total(c.Z) $
+      else                   E[i] = total(c.E)
+    endfor
+    plot, E
+
+  endelse
 
 end

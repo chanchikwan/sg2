@@ -31,7 +31,7 @@
   }
 
 /* Adding the 1st term in the Jacobian */
-KERN(_add_pro, +=)
+KERN(_add_pro, += BETA * x[H] +)
 
 R *add_pro(R *f, const R *x, const R *y)
 {

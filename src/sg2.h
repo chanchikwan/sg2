@@ -19,6 +19,7 @@
 #ifndef SG2_H
 #define SG2_H
 
+#define BETA   1.0e+3
 #define CFL    0.5
 #define DT_MIN 1.0e-8
 

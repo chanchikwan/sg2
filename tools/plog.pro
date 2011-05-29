@@ -16,74 +16,102 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with sg2. If not, see <http://www.gnu.org/licenses/>.
 
-pro plog, n, Z=Z, mov=mov
+pro setup, i, n
 
-  if n_elements(n) eq 0 then begin
+  common io, eps, png, name
+  name = n
 
-    phi = 2 * !pi * dindgen(32) / 32
-    usersym, cos(phi), sin(phi)
+  if eps then begin
+    set_plot, 'ps'
+    device, filename=name+'.eps', /encap
+    device, /color, /decomposed, /inch, xSize=4, ySize=4
+  endif else if !d.window ne i then begin
+    window, i, retain=2, xSize=512, ySize=512
+  endif
 
-    spawn, 'wc -l log.txt', wc
-    n = long(wc[0])
+end
 
-    data = dblarr(6, n)
-    openr, lun, 'log.txt', /get_lun
-    readf, lun, data
-    close, lun & free_lun, lun
-    data = transpose(data)
+pro cleanup
 
-    t = data[*,0]
-    E = data[*,1]
-    y = (2 * !pi - atan(data[*,3], data[*,2])) mod (2 * !pi)
-    x = (2 * !pi - atan(data[*,5], data[*,4])) mod (2 * !pi)
+  common io, eps, png, name
 
-    window, 0, xSize=512, ySize=512
-    plot, t, E, xTitle='time', yTitle='energy'
+  if eps then begin
+    device, /close
+    set_plot, 'x'
+  endif else if png then begin
+    write_png, name+'.png', tvrd(/true)
+  endif
 
-    window, 1, xSize=512, ySize=512
-    if keyword_set(mov) then  begin
-      tail = 5000
-      for i = tail, n - 1, 1000 do begin
-        plot,  x[i-tail:i], y[i-tail:i], psym=3, /iso, /xStyle, /yStyle, $
-               xRange=[0,2*!pi], yRange=[0,2*!pi], $
-               Title='position', xTitle='x - x(0)', yTitle='y - y(0)'
-        plots, x[i], y[i], psym=8
-        wait, 0.04
-      endfor
-    endif else begin
-      plot,  x, y, psym=3, /iso, /xStyle, /yStyle, $
-             xRange=[0,2*!pi], yRange=[0,2*!pi], $
-             Title='position', xTitle='x - x(0)', yTitle='y - y(0)'
-      plots, x[n-1], y[n-1], psym=8
-    endelse
+end
 
-    x = x - x[0]
-    y = y - y[0]
-    for i = 1, n-1 do begin
-      dx = x[i] - x[i-1]
-      dy = y[i] - y[i-1]
-      if dx gt  1.0 then x[i:*] = x[i:*] - 2 * !pi
-      if dx le -1.0 then x[i:*] = x[i:*] + 2 * !pi
-      if dy gt  1.0 then y[i:*] = y[i:*] - 2 * !pi
-      if dy le -1.0 then y[i:*] = y[i:*] + 2 * !pi
-    endfor
-    window, 2, xSize=512, ySize=512
-    plot, x, y, /iso, Title='Unfolded position', $
-          xTitle='x - x(0)', yTitle='y - y(0)'
+pro plot_cache, n, setz
 
-    window, 3, xSize=512, ySize=512
-    plot, t, x^2 + y^2, xTitle='time', yTitle='[x - x(0)]^2 + [y - y(0)]^2'
+  E = dblarr(n + 1)
+  for i = 0, n do begin
+    c = cache(string(i, format='(i04)') + '.sca')
+    if setz then E[i] = total(c.Z) $
+    else         E[i] = total(c.E)
+  endfor
 
-  endif else begin
+  setup, 0, 'cache'
+  plot, E, xTitle='Time', yTitle='Energy'
+  cleanup
 
-    E = dblarr(n + 1)
-    for i = 0, n do begin
-      c = cache(string(i, format='(i04)') + '.sca')
-      if keyword_set(Z) then E[i] = total(c.Z) $
-      else                   E[i] = total(c.E)
-    endfor
-    plot, E
+end
 
-  endelse
+pro plot_log, name
+
+  phi = 2 * !pi * dindgen(32) / 32
+  usersym, cos(phi), sin(phi)
+
+  spawn, 'wc -l ' + name, wc
+  n = long(wc[0])
+
+  data = dblarr(6, n)
+  openr, lun, name, /get_lun
+  readf, lun, data
+  close, lun & free_lun, lun
+  data = transpose(data)
+  
+  t = data[*,0]
+  E = data[*,1]
+  y = (2 * !pi - atan(data[*,3], data[*,2])) mod (2 * !pi)
+  x = (2 * !pi - atan(data[*,5], data[*,4])) mod (2 * !pi)
+
+  setup, 0, 'path'
+  plot,  x, y, psym=3, /iso, /xStyle, /yStyle, $
+         xRange=[0,2*!pi], yRange=[0,2*!pi], $
+         Title='Position', xTitle='x', yTitle='y'
+  plots, x[n-1], y[n-1], psym=8
+  cleanup
+
+  x = x - x[0]
+  y = y - y[0]
+  for i = 1, n-1 do begin
+    dx = x[i] - x[i-1]
+    dy = y[i] - y[i-1]
+    if dx gt  1.0 then x[i:*] = x[i:*] - 2 * !pi
+    if dx le -1.0 then x[i:*] = x[i:*] + 2 * !pi
+    if dy gt  1.0 then y[i:*] = y[i:*] - 2 * !pi
+    if dy le -1.0 then y[i:*] = y[i:*] + 2 * !pi
+  endfor
+  setup, 1, 'upath'
+  plot, x, y, /iso, Title='Unfolded shifted position', xTitle='x', yTitle='y'
+  cleanup
+
+  setup, 2, 'r2'
+  plot, t, x^2 + y^2, xTitle='Time', yTitle='x^2 + y^2'
+  cleanup
+
+end
+
+pro plog, n, Z=Z, eps=eps, png=png
+
+  common io, seteps, setpng
+  seteps = keyword_set(eps)
+  setpng = keyword_set(png)
+
+  if n_elements(n) eq 0 then plot_log, 'log.txt' $
+  else plot_cache, n, keyword_set(Z)
 
 end

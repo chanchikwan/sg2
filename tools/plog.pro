@@ -20,24 +20,29 @@ pro plog, n, Z=Z
 
   if n_elements(n) eq 0 then begin
 
+    phi = 2 * !pi * dindgen(32) / 32
+    usersym, cos(phi), sin(phi)
+
     spawn, 'wc -l log.txt', wc
     n = long(wc[0])
 
-    data = dblarr(5, n)
+    data = dblarr(6, n)
     openr, lun, 'log.txt', /get_lun
     readf, lun, data
     close, lun & free_lun, lun
     data = transpose(data)
 
-    E = data[*,0]
-    y = atan(data[*,2], data[*,1])
-    x = atan(data[*,4], data[*,3])
+    t = data[*,0]
+    E = data[*,1]
+    y = (2 * !pi - atan(data[*,3], data[*,2])) mod (2 * !pi)
+    x = (2 * !pi - atan(data[*,5], data[*,4])) mod (2 * !pi)
 
     window, 0, xSize=512, ySize=512
-    plot, E
+    plot, t, E
 
     window, 1, xSize=512, ySize=512
-    plot, x, y, psym=3, /xStyle, /yStyle, xRange=!pi*[-1,1], yRange=!pi*[-1,1]
+    plot, x, y, psym=3, /xStyle, /yStyle, xRange=[0,2*!pi], yRange=[0,2*!pi]
+    plots, x[n-1], y[n-1], psym=8
 
   endif else begin
 

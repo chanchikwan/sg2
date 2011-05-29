@@ -72,7 +72,7 @@ Z getseed(void);
 void setup(Z, Z);
 int  solve(R, R, R, R, R, Z, Z);
 void setdt(R, R);
-R    getdt(R, R, R);
+R    getdt(R, R, R, R);
 void setrk(const char *);
 
 void step(R, R, R, R, R);

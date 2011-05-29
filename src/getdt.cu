@@ -37,7 +37,7 @@ void setdt(R c, R f)
   fix = f;
 }
 
-R getdt(R nu, R mu, R fi)
+R getdt(R nu, R mu, R fi, R t)
 {
   static Z i;
   R m, s;
@@ -53,7 +53,7 @@ R getdt(R nu, R mu, R fi)
   cudaMemcpy(Host+1, W+H2, sizeof(C), cudaMemcpyDeviceToHost);
   if(Host->r != Host->r) return 0.0; /* spectrum contains NAN */
 
-  fprintf(file, "%g %g %g %g %g\n", 0.5 * s / (N1 * N2),
+  fprintf(file, "%g %g %g %g %g %g\n", t, 0.5 * s / (N1 * N2),
           Host[0].r, Host[0].i, Host[1].r, Host[1].i);
   if(!(++i % 16)) fflush(file);
 

@@ -33,17 +33,17 @@
 /* Adding the 1st term in the Jacobian */
 KERN(_add_pro, += z * x[H] +)
 
-R *add_pro(R *f, const R *x, const R *y, R bt)
+R *add_pro(R *f, const R *x, const R *y, R beta)
 {
-  _add_pro<<<Gsz, Bsz>>>(f, x, y, bt, N1, N2, F2);
+  _add_pro<<<Gsz, Bsz>>>(f, x, y, beta, N1, N2, F2);
   return f;
 }
 
 /* Adding the 2nd term in the Jacobian */
-KERN(_sub_pro, -=)
+KERN(_sub_pro,  = z * f[h] -)
 
-R *sub_pro(R *f, const R *x, const R *y)
+R *sub_pro(R *f, const R *x, const R *y, R scale)
 {
-  _sub_pro<<<Gsz, Bsz>>>(f, x, y, 0.0, N1, N2, F2);
+  _sub_pro<<<Gsz, Bsz>>>(f, x, y, scale, N1, N2, F2);
   return f;
 }

@@ -59,13 +59,16 @@ void lsRKCNn(const Z n, const R *alpha, const R *beta, const R *gamma,
     const R im = dt * 0.5 * (alpha[i+1] - alpha[i]);
     const R ex = dt * gamma[i] / (N1 * N2);
 
-    if(fi * ki < 0.0)
+    jacobi2(X, Y, W);
+    if(fi * ki >= 0.0)
+      sub_pro(w, inverse((R *)X, X), inverse((R *)Y, Y), beta[i]);
+    else {
       force(w, beta[i], fi, ki); /* scaling and Kolmogorov forcing */
-    else
-      scale(w, beta[i]);
+      sub_pro(w, inverse((R *)X, X), inverse((R *)Y, Y), 1.0);
+    }
 
-    jacobi1(X, Y, W); add_pro(w, inverse((R *)X, X), inverse((R *)Y, Y), bt);
-    jacobi2(X, Y, W); sub_pro(w, inverse((R *)X, X), inverse((R *)Y, Y));
+    jacobi1(X, Y, W);
+    add_pro(w, inverse((R *)X, X), inverse((R *)Y, Y), bt);
 
     forward(X, w); /* X here is just a buffer */
 

@@ -63,6 +63,8 @@ void step(R nu, R mu, R bt, R fi, R ki, R dt)
 R flop(void)
 {
   return N1 * N2 *        ( 4.0 +  5.0 * (log2((R)N1) + log2((R)N2)))
-       + N1 * N2 * subs * (25.5 + 12.5 * (log2((R)N1) + log2((R)N2)))
+       + N1 * N2 * subs * (26.5 + 12.5 * (log2((R)N1) + log2((R)N2)))
        + N1 * N2 * subs * (Kforce ? 8 : 0);
+  /* Float operation count includes reduction + RK4 + forcing, the
+     computation of the nonlinear term in raw-dump is not included. */
 }

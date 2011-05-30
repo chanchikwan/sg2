@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
   const char *input = "zeros";
   const char *rk    = "rk3";
 
-  R nu = 5.0e-3, mu = 0.0e+0;
+  R nu = 5.0e-3, mu = 0.0e+0, bt = 0.0;
   R fi = 1.0e+0, ki = 1.0e+1;
   R tt = 1000.0, dt = 0.0e+0;
 
@@ -53,6 +53,7 @@ int main(int argc, char *argv[])
       PARA('d') id = atoi(argv[++i]); break;
       PARA('n') nu = atof(argv[++i]); break;
       PARA('m') mu = atof(argv[++i]); break;
+      PARA('b') bt = atof(argv[++i]); break;
       PARA('f') ki = atof(argv[++i]); BREAK;
       fi = ki;  ki = atof(argv[++i]); break;
       FLAG('r') rk =      argv[i]+1 ; break;
@@ -96,6 +97,7 @@ int main(int argc, char *argv[])
   }
 
   printf("  Dissipation :\t nu = %g,\tmu = %g\n", nu, mu);
+  printf("  QGS terms   :\t bt = %g          \n", bt    );
   printf("  Forcing     :\t fi = %g,\tki = %g\n", fi, ki);
   printf("  Time        :\t tt = %g,\tnt = %d\n", tt, n0);
   printf("  Resolution  :\t n1 = %d,\tn2 = %d\n", n1, n2);
@@ -121,5 +123,5 @@ int main(int argc, char *argv[])
   }
 
   /* Really solve the problem */
-  return solve(nu, mu, fi, ki, tt / n0, i, n0);
+  return solve(nu, mu, bt, fi, ki, tt / n0, i, n0);
 }

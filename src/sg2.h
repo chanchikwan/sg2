@@ -19,7 +19,6 @@
 #ifndef SG2_H
 #define SG2_H
 
-#define BETA   1.0e+3
 #define CFL    0.5
 #define DT_MIN 1.0e-8
 
@@ -71,12 +70,12 @@ Z getseed(void);
 
 /* Setup, helpers, drivers, and I/O */
 void setup(Z, Z);
-int  solve(R, R, R, R, R, Z, Z);
+int  solve(R, R, R, R, R, R, Z, Z);
 void setdt(R, R);
 R    getdt(R, R, R, R);
 void setrk(const char *);
 
-void step(R, R, R, R, R);
+void step(R, R, R, R, R, R);
 R    flop(void);
 
 C *init(C *, const char *);
@@ -84,14 +83,14 @@ C *load(C *, const char *);
 C *dump(const char *, C *);
 
 /* Computation kernels */
-void lsRKCNn(const Z, const R *, const R *, const R *, R, R, R, R, R);
+void lsRKCNn(const Z, const R *, const R *, const R *, R, R, R, R, R, R);
 void reduce (R *, R *, const R *, const R *);
 
 void getu   (C *, C *, const C *);
 void jacobi1(C *, C *, const C *);
 void jacobi2(C *, C *, const C *);
 
-R *add_pro(R *, const R *, const R *);
+R *add_pro(R *, const R *, const R *, R);
 R *sub_pro(R *, const R *, const R *);
 
 R *force(R *, R, R, R);

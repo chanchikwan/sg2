@@ -50,7 +50,7 @@ static __global__ void _evol_diff(C *W, const C *F, const R KK,
 }
 
 void lsRKCNn(const Z n, const R *alpha, const R *beta, const R *gamma,
-             R nu, R mu, R fi, R ki, R dt)
+             R nu, R mu, R bt, R fi, R ki, R dt)
 {
   const R K = 0.99 + (MIN(N1, N2) - 1) / 3;
 
@@ -64,7 +64,7 @@ void lsRKCNn(const Z n, const R *alpha, const R *beta, const R *gamma,
     else
       scale(w, beta[i]);
 
-    jacobi1(X, Y, W); add_pro(w, inverse((R *)X, X), inverse((R *)Y, Y));
+    jacobi1(X, Y, W); add_pro(w, inverse((R *)X, X), inverse((R *)Y, Y), bt);
     jacobi2(X, Y, W); sub_pro(w, inverse((R *)X, X), inverse((R *)Y, Y));
 
     forward(X, w); /* X here is just a buffer */

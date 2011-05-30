@@ -81,7 +81,7 @@ C *dump(const char *name, C *F)
 
   /* Compute the non-linear term */
   scale(w, 0.0);
-  jacobi1(X, Y, W); add_pro(w, inverse((R *)X, X), inverse((R *)Y, Y));
+  jacobi1(X, Y, W); add_pro(w, inverse((R *)X, X), inverse((R *)Y, Y), 0.0);
   jacobi2(X, Y, W); sub_pro(w, inverse((R *)X, X), inverse((R *)Y, Y));
   scale(forward(X, w), 1.0 / (N1 * N2));
 

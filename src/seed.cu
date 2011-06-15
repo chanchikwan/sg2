@@ -26,8 +26,9 @@ Z setseed(const char *s)
 {
   FILE *f = fopen(s, "r");
   if(!f) {
+    const char *z = s;
     char c;
-    while((int)(c = *s++))
+    while((int)(c = *z++))
       if(c < '0' || '9' < c)
         return -1;
     byhand = 1;

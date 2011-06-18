@@ -72,7 +72,7 @@ pro plot_log, name
   readf, lun, data
   close, lun & free_lun, lun
   data = transpose(data)
-  
+
   t = data[*,0]
   E = data[*,1]
   y = (2 * !pi - atan(data[*,3], data[*,2])) mod (2 * !pi)
@@ -105,13 +105,62 @@ pro plot_log, name
 
 end
 
+pro plot_average, names
+
+  setup, 2, 'r2'
+  r  = 0
+  r2 = 0
+
+  for j = 0, n_elements(names) - 1 do begin
+    name = names[j]+'.txt'
+    spawn, 'wc -l ' + name, wc
+    sz = long(wc[0])
+    print, 'loading: ' + name + ', ' + string(sz) + ' lines'
+
+    data = dblarr(6, sz)
+    openr, lun, name, /get_lun
+    readf, lun, data
+    close, lun & free_lun, lun
+    data = transpose(data)
+
+    t = data[*,0]
+    y = (2 * !pi - atan(data[*,3], data[*,2])) mod (2 * !pi)
+    x = (2 * !pi - atan(data[*,5], data[*,4])) mod (2 * !pi)
+
+    x = x - x[0]
+    y = y - y[0]
+    for i = 1, n_elements(t)-1 do begin
+      dx = x[i] - x[i-1]
+      dy = y[i] - y[i-1]
+      if dx gt  1.0 then x[i:*] = x[i:*] - 2 * !pi
+      if dx le -1.0 then x[i:*] = x[i:*] + 2 * !pi
+      if dy gt  1.0 then y[i:*] = y[i:*] - 2 * !pi
+      if dy le -1.0 then y[i:*] = y[i:*] + 2 * !pi
+    endfor
+
+    if j eq 0 then plot, [1,1e4], [0.1, 1e5], /nodata, /xLog, /yLog, $
+                           xTitle='Time', yTitle=textoidl('x^2 + y^2')
+    oplot, t, x^2 + y^2, color=192 * (256LL^2 + 256 + 1)
+    r2 = r2 + x^2 + y^2
+    r  = r  + sqrt(x^2 + y^2)
+  endfor
+
+  oplot, t, r2 / n_elements(names), thick=3, color=255
+  oplot, t, (r / n_elements(names))^2, thick=3, color=255, lineStyle=2
+  oplot, [1,1e4], [10,1e5], lineStyle=2
+
+  cleanup
+
+end
+
 pro plog, n, Z=Z, eps=eps, png=png
 
   common io, seteps, setpng
   seteps = keyword_set(eps)
   setpng = keyword_set(png)
 
-  if n_elements(n) eq 0 then plot_log, 'log.txt' $
-  else plot_cache, n, keyword_set(Z)
+       if n_elements(n) eq 0 then plot_log, 'log.txt'         $
+  else if size(n,/type) ne 7 then plot_cache, n, keyword_set(Z) $
+  else                            plot_average, n
 
 end

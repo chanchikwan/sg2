@@ -44,6 +44,22 @@ pro cleanup
 
 end
 
+pro unfold, x, y
+
+  x = x - x[0]
+  y = y - y[0]
+
+  for i = 1, n_elements(x)-1 do begin
+    dx = x[i] - x[i-1]
+    dy = y[i] - y[i-1]
+    if dx gt  !pi then x[i:*] = x[i:*] - 2 * !pi
+    if dx le -!pi then x[i:*] = x[i:*] + 2 * !pi
+    if dy gt  !pi then y[i:*] = y[i:*] - 2 * !pi
+    if dy le -!pi then y[i:*] = y[i:*] + 2 * !pi
+  endfor
+
+end
+
 pro plot_cache, n, setz
 
   E = dblarr(n + 1)
@@ -59,96 +75,49 @@ pro plot_cache, n, setz
 
 end
 
-pro plot_log, name
+pro plot_logs
 
   phi = 2 * !pi * dindgen(32) / 32
   usersym, cos(phi), sin(phi)
 
-  spawn, 'wc -l ' + name, wc
-  n = long(wc[0])
+  spawn, 'ls *txt', names
 
-  data = dblarr(6, n)
-  openr, lun, name, /get_lun
-  readf, lun, data
-  close, lun & free_lun, lun
-  data = transpose(data)
+  for i = 0, n_elements(names) - 1 do begin
+    spawn, 'wc -l ' + names[i], wc
+    n = long(wc[0])
+
+    temp = dblarr(6, n)
+    openr, lun, names[i], /get_lun
+    readf, lun, temp
+    close, lun & free_lun, lun
+
+    if i eq 0 then data =        transpose(temp) $
+    else           data = [data, transpose(temp)]
+  endfor
 
   t = data[*,0]
   E = data[*,1]
   y = (2 * !pi - atan(data[*,3], data[*,2])) mod (2 * !pi)
   x = (2 * !pi - atan(data[*,5], data[*,4])) mod (2 * !pi)
 
-  setup, 0, 'path'
+  setup, 0, 'E'
+  plot,  t,  E
+  cleanup
+
+  setup, 1, 'path'
   plot,  x, y, psym=3, /iso, /xStyle, /yStyle, $
          xRange=[0,2*!pi], yRange=[0,2*!pi], $
          Title='Position', xTitle='x', yTitle='y'
   plots, x[n-1], y[n-1], psym=8
   cleanup
 
-  x = x - x[0]
-  y = y - y[0]
-  for i = 1, n-1 do begin
-    dx = x[i] - x[i-1]
-    dy = y[i] - y[i-1]
-    if dx gt  1.0 then x[i:*] = x[i:*] - 2 * !pi
-    if dx le -1.0 then x[i:*] = x[i:*] + 2 * !pi
-    if dy gt  1.0 then y[i:*] = y[i:*] - 2 * !pi
-    if dy le -1.0 then y[i:*] = y[i:*] + 2 * !pi
-  endfor
-  setup, 1, 'upath'
+  setup, 2, 'upath'
+  unfold, x, y
   plot, x, y, /iso, Title='Unfolded shifted position', xTitle='x', yTitle='y'
   cleanup
 
-  setup, 2, 'r2'
+  setup, 3, 'r2'
   plot, t, x^2 + y^2, xTitle='Time', yTitle='x^2 + y^2'
-  cleanup
-
-end
-
-pro plot_average, names
-
-  setup, 2, 'r2'
-  r  = 0
-  r2 = 0
-
-  for j = 0, n_elements(names) - 1 do begin
-    name = names[j]+'.txt'
-    spawn, 'wc -l ' + name, wc
-    sz = long(wc[0])
-    print, 'loading: ' + name + ', ' + string(sz) + ' lines'
-
-    data = dblarr(6, sz)
-    openr, lun, name, /get_lun
-    readf, lun, data
-    close, lun & free_lun, lun
-    data = transpose(data)
-
-    t = data[*,0]
-    y = (2 * !pi - atan(data[*,3], data[*,2])) mod (2 * !pi)
-    x = (2 * !pi - atan(data[*,5], data[*,4])) mod (2 * !pi)
-
-    x = x - x[0]
-    y = y - y[0]
-    for i = 1, n_elements(t)-1 do begin
-      dx = x[i] - x[i-1]
-      dy = y[i] - y[i-1]
-      if dx gt  1.0 then x[i:*] = x[i:*] - 2 * !pi
-      if dx le -1.0 then x[i:*] = x[i:*] + 2 * !pi
-      if dy gt  1.0 then y[i:*] = y[i:*] - 2 * !pi
-      if dy le -1.0 then y[i:*] = y[i:*] + 2 * !pi
-    endfor
-
-    if j eq 0 then plot, [1,1e4], [0.1, 1e5], /nodata, /xLog, /yLog, $
-                           xTitle='Time', yTitle=textoidl('x^2 + y^2')
-    oplot, t, x^2 + y^2, color=192 * (256LL^2 + 256 + 1)
-    r2 = r2 + x^2 + y^2
-    r  = r  + sqrt(x^2 + y^2)
-  endfor
-
-  oplot, t, r2 / n_elements(names), thick=3, color=255
-  oplot, t, (r / n_elements(names))^2, thick=3, color=255, lineStyle=2
-  oplot, [1,1e4], [10,1e5], lineStyle=2
-
   cleanup
 
 end
@@ -159,8 +128,7 @@ pro plog, n, Z=Z, eps=eps, png=png
   seteps = keyword_set(eps)
   setpng = keyword_set(png)
 
-       if n_elements(n) eq 0 then plot_log, 'log.txt'         $
-  else if size(n,/type) ne 7 then plot_cache, n, keyword_set(Z) $
-  else                            plot_average, n
+  if n_elements(n) eq 0 then plot_logs $
+  else plot_cache, n, keyword_set(Z)
 
 end

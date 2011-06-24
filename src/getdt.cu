@@ -37,14 +37,17 @@ void setdt(R c, R f)
   fix = f;
 }
 
-R getdt(R nu, R mu, R fi, R t)
+R getdt(R nu, R mu, R fi, R t, Z i)
 {
-  static Z i;
+  static Z id = -1;
   R m, s;
 
-  if(!file) {
-    atexit(done);
-    file = fopen("log.txt", "a");
+  if(id == -1) atexit(done);
+
+  if(id !=  i) { /* open new log file */
+    done();
+    file = fopen(name(i, "txt"), "w");
+    id = i;
   }
 
   getu(X, Y, W);
@@ -55,7 +58,6 @@ R getdt(R nu, R mu, R fi, R t)
 
   fprintf(file, "%g %g %g %g %g %g\n", t, 0.5 * s / (N1 * N2),
           Host[0].r, Host[0].i, Host[1].r, Host[1].i);
-  if(!(++i % 16)) fflush(file);
 
   if(cfl == 0.0) return fix;
   else {

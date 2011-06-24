@@ -40,7 +40,7 @@ int solve(R nu, R mu, R fi, R ki, R dT, Z i, Z n)
 
     cudaEventRecord(t0, 0);
     while(time < next) {
-      R dt = getdt(nu, mu, fi, time);
+      R dt = getdt(nu, mu, fi, time, i-1);
       if(dt == 0.0) error(" diverged, QUIT\n");
       printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b%5d ", ++m);
       if(time + dt < next)

@@ -61,7 +61,7 @@ void usage(int);
 void setprefix(const char *);
 int valid(const char *);
 int frame(const char *);
-const char *name(Z);
+const char *name(Z, const char *);
 
 /* Random number generator */
 Z setseed(const char *);

@@ -16,6 +16,8 @@
    You should have received a copy of the GNU General Public License
    along with sg2. If not, see <http://www.gnu.org/licenses/>. */
 
+#include <stdlib.h>
+#include <stdio.h>
 #include <math.h>
 #include "sg2.h"
 
@@ -23,29 +25,47 @@
 static R cfl = CFL;
 static R fix = DT_MIN;
 
+static FILE *file = NULL;
+static void done(void)
+{
+  if(file) fclose(file);
+}
+
 void setdt(R c, R f)
 {
   cfl = c;
   fix = f;
 }
 
-R getdt(R nu, R mu, R fi)
+R getdt(R nu, R mu, R fi, R t, Z i)
 {
-  const R n = MIN(N1, N2);
-  R uu, adv, dff, frc, dt;
+  static Z id = -1;
+  R m, s;
 
-  if(cfl == 0.0) return fix;
+  if(id == -1) atexit(done);
 
-  cudaMemcpy(Host, W, sizeof(R), cudaMemcpyDeviceToHost);
-  if(Host[0].r != Host[0].r) return 0.0; /* spectrum contains NAN */
+  if(id !=  i) { /* open new log file */
+    done();
+    file = fopen(name(i, "txt"), "w");
+    id = i;
+  }
 
   getu(X, Y, W);
-  reduce(&uu, NULL, inverse((R *)X, X), inverse((R *)Y, Y));
+  reduce(&m, &s, inverse((R *)X, X), inverse((R *)Y, Y));
+  cudaMemcpy(Host,   W+1,  sizeof(C), cudaMemcpyDeviceToHost);
+  cudaMemcpy(Host+1, W+H2, sizeof(C), cudaMemcpyDeviceToHost);
+  if(Host->r != Host->r) return 0.0; /* spectrum contains NAN */
 
-  adv = 10.0 / (sqrt(uu) * n);
-  dff = 5.95 / (nu * n * n / 9.0 + mu);
-  frc = pow(10.0 / fabs(fi * n), 2.0 / 3.0);
+  fprintf(file, "%g %g %g %g %g %g\n", t, 0.5 * s / (N1 * N2),
+          Host[0].r, Host[0].i, Host[1].r, Host[1].i);
 
-  dt = cfl * MIN(adv, MIN(dff, frc));
-  return dt < fix ? 0.0 : dt;
+  if(cfl == 0.0) return fix;
+  else {
+    const R n   = MIN(N1, N2);
+    const R adv = 10.0 / (sqrt(m) * n);
+    const R dff = 5.95 / (nu * n * n / 9.0 + mu);
+    const R frc = pow(10.0 / fabs(fi * n), 2.0 / 3.0);
+    const R dt  = cfl * MIN(adv, MIN(dff, frc));
+    return dt < fix ? 0.0 : dt;
+  }
 }

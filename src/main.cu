@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
   else {
     printf("  Initialize  :\t ");
     if(init(W, input)) {
-      dump(name(i = 0), W);
+      dump(name(i = 0, "raw"), W);
       printf("\b\"%s\"\n", input);
     } else
       error("invalid initial condition \"%s\", QUIT\n", input);

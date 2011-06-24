@@ -56,9 +56,9 @@ int frame(const char *h)
   return 0;
 }
 
-const char *name(Z i)
+const char *name(Z i, const char *ext)
 {
   static char n[SIZE];
-  snprintf(n, SIZE, "%s%04d.raw", prefix, i);
+  snprintf(n, SIZE, "%s%04d.%s", prefix, i, ext);
   return n;
 }

@@ -40,7 +40,7 @@ int solve(R nu, R mu, R fi, R ki, R dT, Z i, Z n)
 
     cudaEventRecord(t0, 0);
     while(time < next) {
-      R dt = getdt(nu, mu, fi);
+      R dt = getdt(nu, mu, fi, time, i-1);
       if(dt == 0.0) error(" diverged, QUIT\n");
       printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b%5d ", ++m);
       if(time + dt < next)
@@ -60,7 +60,7 @@ int solve(R nu, R mu, R fi, R ki, R dT, Z i, Z n)
     printf("\b\b\b\b\b\b\b\b\b\b\b\bstep%c %7.3f ms/cycle ~ %.3f GFLOPS\n",
            m > 1 ? 's' : ' ', ms, 1e-6 * flop() / ms);
 
-    dump(name(i), W);
+    dump(name(i, "raw"), W);
   }
 
   printf("======================= Done  Simulation =======================\n");

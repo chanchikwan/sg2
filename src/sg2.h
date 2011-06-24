@@ -61,7 +61,7 @@ void usage(int);
 void setprefix(const char *);
 int valid(const char *);
 int frame(const char *);
-const char *name(Z);
+const char *name(Z, const char *);
 
 /* Random number generator */
 Z setseed(const char *);
@@ -72,7 +72,7 @@ Z getseed(void);
 void setup(Z, Z);
 int  solve(R, R, R, R, R, Z, Z);
 void setdt(R, R);
-R    getdt(R, R, R);
+R    getdt(R, R, R, R, Z);
 void setrk(const char *);
 
 void step(R, R, R, R, R);

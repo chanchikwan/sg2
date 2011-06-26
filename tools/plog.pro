@@ -101,7 +101,7 @@ pro plot_logs
   x = (2 * !pi - atan(data[*,5], data[*,4])) mod (2 * !pi)
 
   setup, 0, 'E'
-  plot,  t,  E
+  plot,  t,  E, xTitle='Time', yTitle='Energy'
   cleanup
 
   setup, 1, 'path'

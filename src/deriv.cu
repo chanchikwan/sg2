@@ -50,7 +50,7 @@ void getu(C *Fx, C *Fy, const C *W)
   _Fx_Fy<<<Hsz, Bsz>>>(Fx, Fy, W, N1, H2);
 }
 
-/* Compute dF/dx and dW/dy from W for the 1st term in the Jacobian */
+/* Compute dF/dx = - Uy and dW/dy from W for the 1st term in the Jacobian */
 KERN(_Fx_Wy, kx *= ikk)
 
 void jacobi1(C *Fx, C *Wy, const C *W)
@@ -58,7 +58,7 @@ void jacobi1(C *Fx, C *Wy, const C *W)
   _Fx_Wy<<<Hsz, Bsz>>>(Fx, Wy, W, N1, H2);
 }
 
-/* Compute dW/dx and dF/dy from W for the 2nd term in the Jacobian */
+/* Compute dW/dx and dF/dy = Ux from W for the 2nd term in the Jacobian */
 KERN(_Wx_Fy, ky *= ikk)
 
 void jacobi2(C *Wx, C *Fy, const C *W)

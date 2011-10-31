@@ -29,6 +29,7 @@ void usage(int status)
 Spectral Galerkin Incompressible Hydrodynamic in 2D (with CUDA)\n\
 \n\
       --help        display this help and exit\n\
+  -b                quasi-geostrophy beta parameter\n\
   -d                device id\n\
   -f                forcing [amplitude and] wavenumber\n\
   -m                Ekman coefficient\n\

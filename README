@@ -22,7 +22,8 @@ CONVENTIONS: let u be the two dimensional velocity.  We define the
     W_k = k^2 F_k.  (*)
 
   We will use nu to denote the kinematic viscosity, mu be the Ekman
-  coefficient.  We will also use
+  coefficient, and beta be the linear expansion coefficient of the
+  Coriolis parameter.  We will also use
 
     J(f, w; x, y) = (df/dx)(dw/dy) - (dw/dx)(df/dy)
 
@@ -32,7 +33,7 @@ EQUATION: from equation (*), it is clear that W_k falls off slower
   than F_k.  For a pseudospectral (or collocation) method, it is
   better to solve the vorticity equation
 
-    dw/dt - J(f, w) = nu grad^2 w - mu w,
+    dw/dt - J(f, w) + beta uy = nu grad^2 w - mu w,
 
   instead of the stream function equation because of the finite
   precision in the fast Fourier transforms.

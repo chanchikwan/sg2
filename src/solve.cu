@@ -20,7 +20,7 @@
 #include <stdio.h>
 #include "sg2.h"
 
-int solve(R nu, R mu, R fi, R ki, R dT, Z i, Z n)
+int solve(R nu, R mu, R bt, R fi, R ki, R dT, Z i, Z n)
 {
   const char rotor[] = "-/|\\";
 
@@ -51,7 +51,7 @@ int solve(R nu, R mu, R fi, R ki, R dT, Z i, Z n)
       }
       printf("%c dt ~ %5.0e", rotor[m%4], dt);
       fflush(stdout);
-      step(nu, mu, fi, ki, dt);
+      step(nu, mu, bt, fi, ki, dt);
     }
     cudaEventRecord(t1, 0);
 

@@ -1,18 +1,17 @@
-CUDA = $(shell if [[ `hostname` =~ platon.* ]]; \
-	then echo /sw/pkg/cuda; \
-	else echo /usr/local/cuda; fi)
+CUDA = $(subst /bin/nvcc,,$(shell echo `which nvcc`))
 NVCC = $(CUDA)/bin/nvcc
-LINK = $(addprefix -Xlinker , -lcufft -rpath $(CUDA)/lib)
-FLGS = $(addprefix --compiler-options , -Wall) -O3 \
-       $(LINK)$(shell if [ `uname` = Linux ]; then echo 64; fi)
+AP64 = $(shell if [ `uname` = Linux ]; then echo 64; fi)
+
+LDFLAGS = $(addprefix -Xlinker , -lcufft -rpath $(CUDA)/lib)$(AP64)
+CFLAGS  = $(addprefix --compiler-options , -Wall) -O3
 
 double:
 	mkdir -p bin
-	$(NVCC) src/*.cu $(FLGS) -o bin/ihd -DOUBLE -arch sm_13
+	$(NVCC) src/*.cu -o bin/ihd $(CFLAGS) $(LDFLAGS) -DOUBLE -arch sm_13
 
 float:
 	mkdir -p bin
-	$(NVCC) src/*.cu $(FLGS) -o bin/ihd
+	$(NVCC) src/*.cu -o bin/ihd $(CFLAGS) $(LDFLAGS)
 
 clean:
 	-rm -f bin/ihd

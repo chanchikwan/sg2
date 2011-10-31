@@ -13,7 +13,7 @@ CONVENTIONS: let u be the two dimensional velocity.  We define the
 
   Similarly, we do not distinguish between w or (0, 0, w).  It is
   clear that the stream function and the vorticity satisfy the
-  following Possion equation:
+  following Poisson equation:
 
     w = - grad^2 f,
 
@@ -22,7 +22,8 @@ CONVENTIONS: let u be the two dimensional velocity.  We define the
     W_k = k^2 F_k.  (*)
 
   We will use nu to denote the kinematic viscosity, mu be the Ekman
-  coefficient.  We will also use
+  coefficient, and beta be the linear expansion coefficient of the
+  Coriolis parameter.  We will also use
 
     J(f, w; x, y) = (df/dx)(dw/dy) - (dw/dx)(df/dy)
 
@@ -32,7 +33,7 @@ EQUATION: from equation (*), it is clear that W_k falls off slower
   than F_k.  For a pseudospectral (or collocation) method, it is
   better to solve the vorticity equation
 
-    dw/dt - J(f, w) = nu grad^2 w - mu w,
+    dw/dt - J(f, w) + beta uy = nu grad^2 w - mu w,
 
   instead of the stream function equation because of the finite
   precision in the fast Fourier transforms.
@@ -69,7 +70,7 @@ NYQUIST FREQUENCY: for an n-point sampling of a real function f_i,
   automatically in the Galerkin truncation.  See next section for
   details.
 
-GALERKIN TRUNCATION: because of the Nyquisst frequency complication
+GALERKIN TRUNCATION: because of the Nyquist frequency complication
   described above, we only keep odd number of modes along the wave-
   space axes.  That is, along k_x, we use the modes [-K, ..., K] for
   certain K.  K is chosen so that that are enough zeros to avoid
@@ -86,7 +87,7 @@ GALERKIN TRUNCATION: because of the Nyquisst frequency complication
 
   The division in the second term is an integer operation so it rounds
   down.  The value 0.99 is chosen so that the test k * k <= K * K is
-  accuracy enough, even in single-precision float, for N ~ 2048.
+  accurate enough, even in single-precision float, for N ~ 2048.
 
 TIME-STEP: The stability condition for the explicit (advection) step
   is u dt < 3.34 / K.  Using K = n / 3, we have
@@ -102,7 +103,7 @@ TIME-STEP: The stability condition for the explicit (advection) step
 
   The overall stable time step is the smaller one.
 
-FORCING: we implemented two kinds of forcings.  One is determinated
+FORCING: we implemented two kinds of forcings.  One is determinant
   Kolmogorov forcing, and the other one is random forcing at a given
   wavenumber.  Both forcing terms are implemented in force.cu.
 
@@ -110,13 +111,13 @@ FORCING: we implemented two kinds of forcings.  One is determinated
 
     f_K(x, y) = fi ki cos(ki x)
 
-  where fi and ki are paramters describing the amplitue and wavenumber
+  where fi and ki are parameters describing the amplitude and wavenumber
   of the forcing.  This forcing is integrated explicitly in the
   low-storage 4th-order Runge-Kutta method.
 
   For random forcing, we use
 
-    f_r(x, y) = 2 fi ki cos[i (kix x + kiy y)] / sqrt(dt)
+    f_r(x, y) = 2 fi ki cos(ki_x x + ki_y y) / sqrt(dt)
 
   and update the vorticity at the end of each Runge-Kutta (full) step.
   The extra factor 2 is introduced so that the energy input is simply
@@ -136,7 +137,7 @@ ENERGY AND ENSTROPHY TRANSFER: the non-linear energy transfer (rate)
 
   where NL denotes the non-linear and pressure terms.  Using "*" to
   denote complex conjugate, we can easily write down the energy
-  trasfer through each mode
+  transfer through each mode
 
     T(k) = (d/dt + 2 mu + 2 nu k^2) u_k*.u_k / 2
          = (u_k*.NL_k + u_k.NL_k*) / 2

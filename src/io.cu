@@ -14,7 +14,7 @@
    License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with sg2. If not, see <http://www.gnu.org/licenses/>. */
+   along with sg2.  If not, see <http://www.gnu.org/licenses/>. */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -80,9 +80,8 @@ C *dump(const char *name, C *F)
   fwrite(Host, sizeof(C), n1 * h2, file);
 
   /* Compute the non-linear term */
-  scale(w, 0.0);
-  jacobi1(X, Y, W); add_pro(w, inverse((R *)X, X), inverse((R *)Y, Y));
-  jacobi2(X, Y, W); sub_pro(w, inverse((R *)X, X), inverse((R *)Y, Y));
+  jacobi2(X, Y, W); sub_pro(w, inverse((R *)X, X), inverse((R *)Y, Y), 0.0);
+  jacobi1(X, Y, W); add_pro(w, inverse((R *)X, X), inverse((R *)Y, Y), 0.0);
   scale(forward(X, w), 1.0 / (N1 * N2));
 
   /* Write the Fourier space non-linear term */

@@ -14,7 +14,7 @@
    License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with sg2. If not, see <http://www.gnu.org/licenses/>. */
+   along with sg2.  If not, see <http://www.gnu.org/licenses/>. */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -29,6 +29,7 @@ void usage(int status)
 Spectral Galerkin Incompressible Hydrodynamic in 2D (with CUDA)\n\
 \n\
       --help        display this help and exit\n\
+  -b                quasi-geostrophy beta parameter\n\
   -d                device id\n\
   -f                forcing [amplitude and] wavenumber\n\
   -m                Ekman coefficient\n\

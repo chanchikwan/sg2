@@ -1,0 +1,20 @@
+#!/bin/sh
+
+#PBS -N sg2-ihd
+#PBS -l nodes=1
+#PBS -l walltime=24:00:00
+#PBS -j oe
+#PBS -o err
+
+. use_modules
+module add cuda
+cd $PBS_O_WORKDIR
+
+S=`basename $PWD`
+D=`ps -A | grep ihd | wc -l`
+
+hostname > host
+echo $S >> host
+echo $D >> host
+
+../bin/ihd -d $D &> out

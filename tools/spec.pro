@@ -14,18 +14,18 @@
 ;; License for more details.
 ;;
 ;; You should have received a copy of the GNU General Public License
-;; along with sg2. If not, see <http://www.gnu.org/licenses/>.
+;; along with sg2.  If not, see <http://www.gnu.org/licenses/>.
 
-pro spec, p, i, n=n, eps=eps, png=png
+pro spec, p, i, n=n, eps=eps, png=png, lego=lego
 
   if n_elements(i) eq 0 then name =     string(p, format='(i04)') $
   else                       name = p + string(i, format='(i04)')
+  if not keyword_set(lego) then lego = 0 else lego = 10
 
   s = cache(name + '.sca')
   if n_elements(s) eq 0 then begin ; load data
     W = load(name + '.raw')
     Z = 0.5 * abs(W)^2 ; the enstrophy
-    if not keyword_set(n) then n = 22
     s = cache(name + '.sca', oned(Z, n))
   endif
 
@@ -47,8 +47,8 @@ pro spec, p, i, n=n, eps=eps, png=png
   oplot, s.k, 1e+2 * s.k^(-3   ), lineStyle=2
   oplot, s.k, 1e+2 * s.k^(-5   ), lineStyle=3
 
-  oplot, s.k, s.E/s.k, thick=2 ; integrated spectrum E(k) = int E(kx,ky) k dphi
-                               ; divided by extra k because of the log-bins
+  oplot, s.k, s.E, thick=2, psym=lego
+
   ; clean up device
   if keyword_set(eps) then begin
     device, /close

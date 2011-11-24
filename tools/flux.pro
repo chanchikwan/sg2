@@ -14,18 +14,18 @@
 ;; License for more details.
 ;;
 ;; You should have received a copy of the GNU General Public License
-;; along with sg2. If not, see <http://www.gnu.org/licenses/>.
+;; along with sg2.  If not, see <http://www.gnu.org/licenses/>.
 
-pro flux, p, i, n=n, eps=eps, png=png
+pro flux, p, i, n=n, eps=eps, png=png, lego=lego
 
   if n_elements(i) eq 0 then name =     string(p, format='(i04)') $
   else                       name = p + string(i, format='(i04)')
+  if not keyword_set(lego) then lego = 0 else lego = 10
 
   f = cache(name + '.fca')
   if n_elements(f) eq 0 then begin ; load data
     d = load(name + '.raw', /nonl)
     T = real_part(conj(d.W) * d.J) ; the enstrophy transfer
-    if not keyword_set(n) then n = 88
     f = cache(name + '.fca', oned(-T, n))
   endif
 
@@ -46,8 +46,8 @@ pro flux, p, i, n=n, eps=eps, png=png
   fE = total(f.E, /cumulative)
   fZ = total(f.Z, /cumulative)
 
-  oplot, f.k, fE / (max(abs(fE)) + 1e-5), thick=2
-  oplot, f.k, fZ / (max(abs(fZ)) + 1e-5), thick=2, color=255
+  oplot, f.k, fE / (max(abs(fE)) + 1e-5), psym=lego, thick=2
+  oplot, f.k, fZ / (max(abs(fZ)) + 1e-5), psym=lego, thick=2, color=255
 
   ; clean up device
   if keyword_set(eps) then begin

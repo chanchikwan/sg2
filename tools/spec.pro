@@ -20,6 +20,7 @@ pro spec, p, i, n=n, eps=eps, png=png, lego=lego
 
   if n_elements(i) eq 0 then name =     string(p, format='(i04)') $
   else                       name = p + string(i, format='(i04)')
+  if not keyword_set(lego) then lego = 0 else lego = 10
 
   s = cache(name + '.sca')
   if n_elements(s) eq 0 then begin ; load data
@@ -46,10 +47,7 @@ pro spec, p, i, n=n, eps=eps, png=png, lego=lego
   oplot, s.k, 1e+2 * s.k^(-3   ), lineStyle=2
   oplot, s.k, 1e+2 * s.k^(-5   ), lineStyle=3
 
-  if keyword_set(lego) then $
-    oplot, s.k, s.E, thick=2, psym=10 $
-  else $
-    oplot, s.k, s.E, thick=2
+  oplot, s.k, s.E, thick=2, psym=lego
 
   ; clean up device
   if keyword_set(eps) then begin

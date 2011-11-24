@@ -21,29 +21,41 @@ function oned, Z, n
   kk = getkk(Z)
   E  = Z / kk & E[0] = 0.0
   k  = sqrt(kk)
+  kG = min(size(k, /dimensions)) / 2 + 0.99 ; Galerkin cutoff wavenumber
 
-  kb = exp(alog(min(size(k, /dimensions)) / 2 + 0.99) * findgen(n + 1) / n)
+  ; Evenly spacing in log k
+  if n_elements(n) then begin
+    kb = kG^(findgen(n + 1) / n)
+    kc = sqrt(kb[0:n-1] * kb[1:n])
+  endif $
+  ; Evenly spacing in linear k
+  else begin 
+    n  = ceil(kG)
+    kb = findgen(n + 1) + 0.5
+    kc = findgen(n) + 1
+  endelse
   nb = lonarr(n)
-  kc = sqrt(kb[0:n-1] * kb[1:n])
   Zc = fltarr(n)
   Ec = fltarr(n)
 
   for i = 0, n-1 do begin
-
     case i of
       0    : j = where(0.0   lt k and k lt kb[i+1], count)
       n-1  : j = where(kb[i] le k and k le kb[i+1], count)
       else : j = where(kb[i] le k and k lt kb[i+1], count)
     endcase
-
     if count ne 0 then begin
       Ec[i] = total(E[j])
       Zc[i] = total(Z[j])
-      kc[i] = total(k[j]) / count
       nb[i] = count
     endif
-
   endfor
+
+  if n_elements(n) then begin
+    dk = kb[1:n] - kb[0:n-1]
+    Ec = Ec / dk
+    Zc = Zc / dk
+  endif
 
   return, {E:Ec, Z:Zc, k:kc, n:nb, b:kb}
 

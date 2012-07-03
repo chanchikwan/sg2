@@ -1,0 +1,6 @@
+#!/bin/bash
+# Run a simulation of Kelvin-Helmholtz instability with 100 outputs
+# (not including the initial condition) and resolution 256x256 up to
+# time = 10
+
+../bin/ihd KH -f 0 -s 100 256 256 -t 10

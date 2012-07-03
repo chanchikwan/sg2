@@ -1,5 +1,49 @@
 Sg2 is a simple 2D spectral hydrodynamic code written in CUDA C
 
+COMPILE: make sure that the nVidia compiler `nvcc` is in your path so
+  that `which nvcc` returns something like "/usr/local/cuda/bin/nvcc".
+  There is no need for configuration.  Simply typing `make` in the
+  source root compiles sg2 in double precision.  The resulting binary
+  is "bin/ihd".  Running `make float` compiles sg2 in single precision
+  mode, which is about two times faster on Fermi Architecture.
+
+USAGE: sg2 doesn't use configuration file.  It follows Unix trandition
+  and takes comman line options at runtime.  To get a list of options,
+  type `bin/ihd --help`.  It returns the following:
+
+    Usage: ihd [OPTION...] [SEED/INPUT_FILE]
+    Spectral Galerkin Incompressible Hydrodynamic in 2D (with CUDA)
+
+          --help        display this help and exit
+      -b                quasi-geostrophy beta parameter
+      -d                device id
+      -f                forcing [amplitude and] wavenumber
+      -m                Ekman coefficient
+      -n                kinematic viscosity
+      -o                prefix of the outputs
+      -rk3, -rk4        pick different time integrators
+      -s                number of frames and grids
+      -t                [Courant number and] total time [and fixed step size]
+
+    Report bugs to <ckch@nordita.org>.
+
+  To run a simulation of Kelvin-Helmholtz instability with 100 outputs
+  (not including the initial condition) and resolution 256x256 up to
+  time = 10, one simply type
+
+    bin/ihd KH -f 0 -s 100 256 256 -t 10
+
+  The above command creates log files 0000.txt, 0001.txt, ...,
+  0100.txt and binary data files 0000.raw, ..., 0100.raw.
+
+  We have provided some IDL scripts in "tools/" to visualize the
+  outputs.  To use them, you can either add "tools/" to !path, or just
+  copy all the IDL scripts to your working directory.
+
+  If one like the idea of configuration files, one can of course wrap
+  the above command in a simple shell script or a submission file.  We
+  have provided some examples in the "demos/" folder.
+
 CONVENTIONS: let u be the two dimensional velocity.  We define the
   stream function f such that
 
